@@ -65,40 +65,40 @@
 
 ### Phase 1: 목업 UI (인터랙티브 프로토타입)
 
-> **목적**: API/DB 연결 없이 하드코딩된 더미 데이터로 실제처럼 동작하는 인터랙티브 목업 페이지 구현. 디자이너에게 전달할 와이어프레임 대용으로 페이지 구조, 버튼 위치, 상태 전환을 시각적으로 보여주기.
+> **목적**: API/DB 연결 없이 하드코딩된 더미 데이터로 실제처럼 동작하는 인터랙티브 목업 페이지 구현.
+>
+> **아키텍처 변경 (2026-04-16)**: `/analyze` 라우트를 제거하고 모든 플로우를 `/` 한 페이지에서 처리.
+> 랜딩 페이지에서 바로 검색 → 슬롯 선택 → 분석 → 결과까지 진행. `/analyze` 접근 시 `/` 로 리다이렉트.
+> 페이지 구조: 히어로(브랜딩) → 검색/분석 플로우(AnalyzeContainer) → 서비스 소개(HowItWorks)
 
-- **Task 003: 랜딩 페이지 목업** - 우선순위
-  - app/page.tsx 랜딩 페이지 Server Component 구현
-  - components/landing/hero-section.tsx 히어로 섹션 (서비스 슬로건 + 설명 + CTA 버튼)
-  - components/landing/how-it-works.tsx 3단계 사용법 안내 섹션
-  - "지금 분석하기" CTA 버튼 -> /analyze 이동
+- **Task 003: 랜딩 페이지 목업** ✅ - 완료
+  - app/page.tsx: HeroSection + AnalyzeContainer + HowItWorks 통합 구조
+  - components/landing/hero-section.tsx: 브랜딩 슬로건 (CTA 버튼 없음 — 검색이 바로 아래)
+  - components/landing/how-it-works.tsx: 3단계 사용법 안내 섹션 (하단 서비스 소개)
+  - app/analyze/page.tsx: `/` 로 리다이렉트 처리
   - 실제 카피 및 브랜드 컬러 적용
 
-- **Task 004: 분석 페이지 목업 -- 검색 및 슬롯 선택 상태**
+- **Task 004: 분석 플로우 상태 관리 및 골격** ✅ - 완료
   - components/layout/header.tsx 구현 (로고 + 다크모드 토글)
   - components/analyze/analyze-container.tsx 클라이언트 컨테이너 (useReducer 상태 관리)
   - components/analyze/step-indicator.tsx 슬롯 A/B 단계 표시
+  - select-a / select-b / ready / analyzing / result 상태 전환 구조 완성
+
+- **Task 005: 검색 UI 및 슬롯 선택**
   - components/analyze/product-search.tsx shadcn/ui Command 기반 검색 UI
   - 하드코딩된 더미 제품 목록으로 검색 드롭다운 동작 구현
-    - 예시 제품: "토리든 다이브인 세럼", "이니스프리 레티놀 앰플", "라운드랩 자작나무 수분크림" 등
   - select-a 상태: 슬롯 A 검색창 활성화
   - select-b 상태: 슬롯 A 선택 완료 표시 + 슬롯 B 검색창 활성화
   - ready 상태: 양쪽 슬롯 선택 완료 + "성분 충돌 분석" 버튼 활성화
-  - 상태 전환 인터랙션 완전히 동작
 
-- **Task 005: 분석 페이지 목업 -- 결과 화면**
+- **Task 006: 결과 화면**
   - components/analyze/result-panel.tsx 분석 결과 패널
   - components/analyze/conflict-card.tsx 충돌 카드 (severity별 색상)
-  - 하드코딩된 더미 충돌 데이터로 result 상태 구현
-    - 충돌 예시: 레티놀 x 비타민C (conflict_type: avoid, severity: high), 레티놀 x AHA (conflict_type: avoid, severity: high)
-    - 시너지 예시: 히알루론산 + 세라마이드 (synergy)
-    - 루틴 분리 권장사항 텍스트
   - result-conflict 상태: 충돌 카드 목록 + 루틴 분리 권장사항 표시
-  - result-safe 상태: 초록 안전 배지 + 시너지 성분 하이라이트 (더미 안전 제품 조합 시)
-  - "돌아가기" 버튼 -> select-a 초기화
-  - "성분 충돌 분석" 버튼 클릭 시 로딩 애니메이션 후 결과 전환 (setTimeout 1.5초)
+  - result-safe 상태: 초록 안전 배지 + 시너지 성분 하이라이트
+  - "돌아가기" 버튼 → select-a 초기화, "성분 충돌 분석" 버튼 클릭 시 로딩 후 결과 전환 (setTimeout 1.5초)
 
-- **Task 006: 성분 직접 입력 다이얼로그 목업**
+- **Task 007: 성분 직접 입력 다이얼로그 목업**
   - components/analyze/manual-input-dialog.tsx 구현
   - shadcn/ui Dialog 기반 모달 UI
   - 쉼표 구분 성분 텍스트 입력 textarea
