@@ -129,6 +129,7 @@
 | name                    | 제품명                                          | TEXT NOT NULL |
 | brand                   | 브랜드명                                        | TEXT NOT NULL |
 | category                | 카테고리 (skincare/mask_pack/cleansing/suncare) | TEXT NOT NULL |
+| oliveyoung_id           | 올리브영 상품 고유 ID                           | TEXT          |
 | image_url               | 제품 이미지 URL                                 | TEXT          |
 | source_url              | 올리브영 상품 페이지 URL                        | TEXT          |
 | raw_ingredients_text    | 원본 전성분 텍스트                              | TEXT          |
@@ -412,11 +413,13 @@ data/csv/        → CSV 데이터 7종
 
 ## 반응형 디자인
 
-| 브레이크포인트 | 너비               |
-| -------------- | ------------------ |
-| 모바일         | 375px              |
-| 태블릿         | 768px              |
-| 데스크탑       | 1280px (메인 타겟) |
+**데스크탑 우선(Desktop First)** 전략으로 개발한다. 1280px 데스크탑 레이아웃을 기준으로 구현한 뒤, 하위 브레이크포인트로 축소 대응한다.
+
+| 브레이크포인트 | 너비   | 우선순위      |
+| -------------- | ------ | ------------- |
+| 데스크탑       | 1280px | **메인 타겟** |
+| 태블릿         | 768px  | 2순위         |
+| 모바일         | 375px  | 3순위         |
 
 다크모드 지원: next-themes 라이브러리 활용
 
