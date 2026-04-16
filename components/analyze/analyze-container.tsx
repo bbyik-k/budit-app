@@ -2,7 +2,6 @@
 
 import { useReducer, useCallback, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { X, FlaskConical, Loader2 } from "lucide-react";
 import type {
   AnalyzeState,
@@ -12,6 +11,7 @@ import type {
 } from "@/types/analyze";
 import StepIndicator from "@/components/analyze/step-indicator";
 import ProductSearch from "@/components/analyze/product-search";
+import ResultPanel from "@/components/analyze/result-panel";
 
 // ---------------------------------------------------------------------------
 // 초기 상태
@@ -238,23 +238,14 @@ export default function AnalyzeContainer() {
         </div>
       )}
 
-      {/* ── 결과 화면 (Task 6에서 ResultPanel로 교체 예정) ── */}
-      {state.step === "result" && (
-        <div className="flex flex-col items-center gap-4 rounded-xl border border-border bg-card p-8 text-center">
-          <Badge variant="outline" className="border-safe text-safe">
-            분석 완료
-          </Badge>
-          <p className="text-muted-foreground">
-            결과 화면은 Task 6에서 구현됩니다.
-          </p>
-          <p className="text-xs text-muted-foreground">
-            충돌 {state.result?.conflicts.length}개 · 시너지{" "}
-            {state.result?.synergies.length}개
-          </p>
-          <Button variant="outline" onClick={() => dispatch({ type: "RESET" })}>
-            돌아가기
-          </Button>
-        </div>
+      {/* ── 결과 화면 ── */}
+      {state.step === "result" && state.result && (
+        <ResultPanel
+          result={state.result}
+          slotAName={state.slotA?.productName ?? "제품 A"}
+          slotBName={state.slotB?.productName ?? "제품 B"}
+          onReset={() => dispatch({ type: "RESET" })}
+        />
       )}
     </div>
   );
