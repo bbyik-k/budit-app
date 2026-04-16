@@ -29,6 +29,15 @@
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
+    /* 부딪 브랜드 컬러 */
+    --brand: 350 80% 60%;
+    --brand-foreground: 0 0% 98%;
+    --safe: 142 71% 40%;
+    --safe-foreground: 0 0% 98%;
+    --caution: 38 92% 48%;
+    --caution-foreground: 0 0% 98%;
+    --conflict: 0 84% 58%;
+    --conflict-foreground: 0 0% 98%;
   }
   .dark {
     --background: 0 0% 3.9%;
@@ -55,6 +64,15 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+    /* 부딪 브랜드 컬러 (다크모드) */
+    --brand: 350 75% 65%;
+    --brand-foreground: 0 0% 3.9%;
+    --safe: 142 60% 48%;
+    --safe-foreground: 0 0% 3.9%;
+    --caution: 38 90% 55%;
+    --caution-foreground: 0 0% 3.9%;
+    --conflict: 0 80% 65%;
+    --conflict-foreground: 0 0% 3.9%;
   }
 }
 
