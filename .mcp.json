@@ -24,7 +24,9 @@
     },
     "shrimp-task-manager": {
       "command": "node",
-      "args": ["/Users/ik/KBI/Develop/AI-Lab/mcp-shrimp-task-manager/dist/index.js"],
+      "args": [
+        "/Users/ik/KBI/Develop/AI-Lab/mcp-shrimp-task-manager/dist/index.js"
+      ],
       "env": {
         "DATA_DIR": "/Users/ik/KBI/Develop/SideProjects/BUDIT/budit-app/shrimp_data",
         "TEMPLATES_USE": "en",

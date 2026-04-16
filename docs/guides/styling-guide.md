@@ -97,8 +97,8 @@ Prettier 플러그인이 자동으로 정렬하지만, 수동 작성 시 다음 
 ### 기본 사용법
 
 ```tsx
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 // ✅ shadcn/ui 컴포넌트 활용
 export function UserCard({ user }) {
@@ -111,7 +111,7 @@ export function UserCard({ user }) {
         <Button variant="outline">프로필 보기</Button>
       </CardContent>
     </Card>
-  )
+  );
 }
 ```
 
@@ -136,21 +136,21 @@ export function UserCard({ user }) {
 ### 컴포넌트 커스터마이징
 
 ```tsx
-import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 // ✅ 기존 컴포넌트 확장
 export function CustomButton({ className, ...props }) {
   return (
     <Button
       className={cn(
-        'transition-all duration-200',
-        'hover:-translate-y-0.5 hover:shadow-lg',
+        "transition-all duration-200",
+        "hover:-translate-y-0.5 hover:shadow-lg",
         className
       )}
       {...props}
     />
-  )
+  );
 }
 
 // ❌ 처음부터 새로 만들기
@@ -160,7 +160,7 @@ export function MyButton({ className, ...props }) {
       className="bg-blue-500... px-4 py-2" // 긴 클래스 나열
       {...props}
     />
-  )
+  );
 }
 ```
 
@@ -182,7 +182,7 @@ npx shadcn@latest add
 
 ```tsx
 // providers/theme-provider.tsx
-import { ThemeProvider as NextThemesProvider } from 'next-themes'
+import { ThemeProvider as NextThemesProvider } from "next-themes";
 
 export function ThemeProvider({ children, ...props }) {
   return (
@@ -195,31 +195,31 @@ export function ThemeProvider({ children, ...props }) {
     >
       {children}
     </NextThemesProvider>
-  )
+  );
 }
 ```
 
 ### 테마 토글 컴포넌트
 
 ```tsx
-import { useTheme } from 'next-themes'
-import { Moon, Sun } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { useTheme } from "next-themes";
+import { Moon, Sun } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export function ThemeToggle() {
-  const { theme, setTheme } = useTheme()
+  const { theme, setTheme } = useTheme();
 
   return (
     <Button
       variant="outline"
       size="icon"
-      onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+      onClick={() => setTheme(theme === "light" ? "dark" : "light")}
     >
-      <Sun className="h-4 w-4 scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-      <Moon className="absolute h-4 w-4 scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
+      <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+      <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
       <span className="sr-only">테마 전환</span>
     </Button>
-  )
+  );
 }
 ```
 
