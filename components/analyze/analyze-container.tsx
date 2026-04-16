@@ -12,6 +12,7 @@ import type {
 import StepIndicator from "@/components/analyze/step-indicator";
 import ProductSearch from "@/components/analyze/product-search";
 import ResultPanel from "@/components/analyze/result-panel";
+import ManualInputDialog from "@/components/analyze/manual-input-dialog";
 
 // ---------------------------------------------------------------------------
 // 초기 상태
@@ -119,8 +120,10 @@ function SlotBadge({
 // ---------------------------------------------------------------------------
 export default function AnalyzeContainer() {
   const [state, dispatch] = useReducer(analyzeReducer, initialState);
-  /** 직접 입력 다이얼로그 대상 슬롯 (Task 7에서 ManualInputDialog와 연결 예정) */
-  const [, setDialogSlot] = useState<"A" | "B" | null>(null);
+  /** 직접 입력 다이얼로그 열림 여부 */
+  const [dialogOpen, setDialogOpen] = useState(false);
+  /** 직접 입력 다이얼로그 대상 슬롯 */
+  const [dialogTargetSlot, setDialogTargetSlot] = useState<"A" | "B">("A");
 
   /** 분석 시작: 1.5초 후 더미 결과로 전환 */
   const handleAnalyze = useCallback(() => {
@@ -139,6 +142,24 @@ export default function AnalyzeContainer() {
   const handleClearSlotB = useCallback(() => {
     dispatch({ type: "SELECT_SLOT_A", payload: state.slotA! });
   }, [state.slotA]);
+
+  /** 직접 입력 다이얼로그 열기 */
+  const handleOpenManualInput = useCallback((slot: "A" | "B") => {
+    setDialogTargetSlot(slot);
+    setDialogOpen(true);
+  }, []);
+
+  /** 직접 입력 확인 — 대상 슬롯에 반영 */
+  const handleManualConfirm = useCallback(
+    (slot: SlotData) => {
+      if (dialogTargetSlot === "A") {
+        dispatch({ type: "SELECT_SLOT_A", payload: slot });
+      } else {
+        dispatch({ type: "SELECT_SLOT_B", payload: slot });
+      }
+    },
+    [dialogTargetSlot]
+  );
 
   return (
     <div className="flex flex-col gap-8">
@@ -167,7 +188,7 @@ export default function AnalyzeContainer() {
                   onSelect={(slot) =>
                     dispatch({ type: "SELECT_SLOT_A", payload: slot })
                   }
-                  onManualInput={() => setDialogSlot("A")}
+                  onManualInput={() => handleOpenManualInput("A")}
                 />
               )}
             </div>
@@ -193,7 +214,7 @@ export default function AnalyzeContainer() {
                   onSelect={(slot) =>
                     dispatch({ type: "SELECT_SLOT_B", payload: slot })
                   }
-                  onManualInput={() => setDialogSlot("B")}
+                  onManualInput={() => handleOpenManualInput("B")}
                 />
               ) : (
                 /* 슬롯 A 미선택 상태에서 슬롯 B는 비활성 플레이스홀더 */
@@ -247,6 +268,14 @@ export default function AnalyzeContainer() {
           onReset={() => dispatch({ type: "RESET" })}
         />
       )}
+
+      {/* ── 성분 직접 입력 다이얼로그 ── */}
+      <ManualInputDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        slotLabel={dialogTargetSlot}
+        onConfirm={handleManualConfirm}
+      />
     </div>
   );
 }
