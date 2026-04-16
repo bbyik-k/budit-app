@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import { Noto_Sans_KR } from "next/font/google";
 import { ThemeProvider } from "next-themes";
+import Header from "@/components/layout/header";
 import "./globals.css";
 
 const defaultUrl = process.env.VERCEL_URL
@@ -36,7 +37,7 @@ export default function RootLayout({
   return (
     <html lang="ko" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${notoSansKR.variable} font-sans antialiased`}
+        className={`${geistSans.variable} ${notoSansKR.variable} flex min-h-screen flex-col font-sans antialiased`}
       >
         <ThemeProvider
           attribute="class"
@@ -44,7 +45,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          {/* 공통 헤더 */}
+          <Header />
+          {/* 페이지 콘텐츠 */}
+          <main className="flex-1">{children}</main>
         </ThemeProvider>
       </body>
     </html>
