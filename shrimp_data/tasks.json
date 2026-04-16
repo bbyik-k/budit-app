@@ -1,0 +1,296 @@
+{
+  "tasks": [
+    {
+      "id": "ac3fefbf-96ae-4217-ac31-141b4373002d",
+      "name": "shadcn/ui 추가 컴포넌트 설치 및 타입 정의",
+      "description": "Phase 1 구현에 필요한 shadcn/ui 컴포넌트(Command, Dialog, Textarea, Separator)를 설치하고, 분석 페이지 전체에서 공유할 TypeScript 타입을 정의한다.",
+      "notes": "Command 컴포넌트는 cmdk 패키지를 내부적으로 사용함. shadcn 설치 시 components/ui/에 자동 생성됨. types/ 디렉토리는 프로젝트 루트 수준에 생성.",
+      "status": "completed",
+      "dependencies": [],
+      "createdAt": "2026-04-16T11:02:57.257Z",
+      "updatedAt": "2026-04-16T11:14:47.918Z",
+      "relatedFiles": [
+        {
+          "path": "components/ui/command.tsx",
+          "type": "CREATE",
+          "description": "shadcn Command 컴포넌트"
+        },
+        {
+          "path": "components/ui/dialog.tsx",
+          "type": "CREATE",
+          "description": "shadcn Dialog 컴포넌트"
+        },
+        {
+          "path": "components/ui/textarea.tsx",
+          "type": "CREATE",
+          "description": "shadcn Textarea 컴포넌트"
+        },
+        {
+          "path": "components/ui/separator.tsx",
+          "type": "CREATE",
+          "description": "shadcn Separator 컴포넌트"
+        },
+        {
+          "path": "types/analyze.ts",
+          "type": "CREATE",
+          "description": "분석 페이지 공유 타입 정의"
+        }
+      ],
+      "implementationGuide": "1. pnpm dlx shadcn@latest add command dialog textarea separator 실행\n2. types/analyze.ts 생성:\n   - AnalyzeStep: 'select-a' | 'select-b' | 'ready' | 'analyzing' | 'result'\n   - SlotData: { type: 'product' | 'manual', productId?: string, productName?: string, brand?: string, ingredients?: string[] }\n   - AnalyzeState: { step: AnalyzeStep, slotA: SlotData | null, slotB: SlotData | null }\n   - AnalyzeAction: union type (SELECT_SLOT_A, SELECT_SLOT_B, START_ANALYZE, SET_RESULT, RESET)\n   - ConflictResult: { ingredientA: string, ingredientB: string, conflictType: 'avoid' | 'caution', severity: 'high' | 'medium' | 'low', reasonKo: string, recommend: string }\n   - SynergyResult: { ingredientA: string, ingredientB: string, reasonKo: string }\n   - AnalyzeResult: { conflicts: ConflictResult[], synergies: SynergyResult[] }",
+      "verificationCriteria": "pnpm build 또는 pnpm type-check 통과. types/analyze.ts import 시 타입 오류 없음. components/ui/command.tsx, dialog.tsx, textarea.tsx 파일 존재 확인.",
+      "analysisResult": "부딪(Budit) Phase 1 목업 UI 구현. API/DB 연결 없이 하드코딩 더미 데이터로 인터랙티브 프로토타입 구축. 스택: Next.js 15 App Router + TypeScript + shadcn/ui(new-york) + Tailwind CSS + useReducer 상태 관리. 공통 규칙: pnpm 전용, \"use client\" 최소화(Server Component 기본), 코드 주석 한국어, 커스텀 컬러(bg-brand/safe/caution/conflict) 활용, Desktop First 반응형.",
+      "summary": "shadcn/ui 4개 컴포넌트(command, dialog, textarea, separator) 설치 완료. types/analyze.ts에 AnalyzeStep, SlotData, AnalyzeState, AnalyzeAction(union type 5종), ConflictResult, SynergyResult, AnalyzeResult 타입 정의. pnpm type-check 오류 없음.",
+      "completedAt": "2026-04-16T11:14:47.916Z"
+    },
+    {
+      "id": "ed6082a7-822e-41ef-bcd9-ad06351ec36e",
+      "name": "공통 헤더 컴포넌트 및 레이아웃 통합",
+      "description": "로고 + 다크모드 토글로 구성된 공통 헤더를 구현하고 루트 레이아웃에 통합한다. 기존 ThemeSwitcher 컴포넌트를 재사용한다.",
+      "notes": "Header는 Server Component로 유지. ThemeSwitcher는 이미 'use client' 선언되어 있으므로 Server Component 내에서 import 가능. 로고 클릭 시 홈(/) 이동.",
+      "status": "completed",
+      "dependencies": [],
+      "createdAt": "2026-04-16T11:02:57.257Z",
+      "updatedAt": "2026-04-16T11:14:50.579Z",
+      "relatedFiles": [
+        {
+          "path": "components/layout/header.tsx",
+          "type": "CREATE",
+          "description": "공통 헤더 컴포넌트 (로고 + 다크모드 토글)"
+        },
+        {
+          "path": "app/layout.tsx",
+          "type": "TO_MODIFY",
+          "description": "헤더 추가 및 레이아웃 구조 업데이트",
+          "lineStart": 31,
+          "lineEnd": 52
+        },
+        {
+          "path": "components/theme-switcher.tsx",
+          "type": "REFERENCE",
+          "description": "재사용할 기존 다크모드 토글 컴포넌트"
+        }
+      ],
+      "implementationGuide": "1. components/layout/header.tsx 생성 (Server Component):\n   - 로고: Link href='/' 텍스트 '부딪' (font-bold, text-brand)\n   - 우측: ThemeSwitcher import (기존 components/theme-switcher.tsx 재사용)\n   - 레이아웃: flex justify-between items-center, px-6 py-4, border-b border-border\n2. app/layout.tsx 수정:\n   - body 내부에 Header 추가 (ThemeProvider 내부, children 위)\n   - min-h-screen flex flex-col 구조로 변경",
+      "verificationCriteria": "localhost:3000 접속 시 헤더(로고 + 다크모드 토글) 표시. 로고 클릭 시 / 이동. 다크모드 토글 정상 동작. 다크모드 전환 시 헤더 스타일 정상.",
+      "analysisResult": "부딪(Budit) Phase 1 목업 UI 구현. API/DB 연결 없이 하드코딩 더미 데이터로 인터랙티브 프로토타입 구축. 스택: Next.js 15 App Router + TypeScript + shadcn/ui(new-york) + Tailwind CSS + useReducer 상태 관리. 공통 규칙: pnpm 전용, \"use client\" 최소화(Server Component 기본), 코드 주석 한국어, 커스텀 컬러(bg-brand/safe/caution/conflict) 활용, Desktop First 반응형.",
+      "summary": "components/layout/header.tsx 생성 (Server Component, 로고 Link+text-brand + ThemeSwitcher 재사용). app/layout.tsx 업데이트: body에 flex min-h-screen flex-col 적용, Header + main flex-1 구조로 변경. pnpm type-check 통과.",
+      "completedAt": "2026-04-16T11:14:50.578Z"
+    },
+    {
+      "id": "fd747a32-24f0-4284-9497-8a506a2d5ab5",
+      "name": "랜딩 페이지 목업 구현",
+      "description": "히어로 섹션과 3단계 사용법 안내 섹션으로 구성된 랜딩 페이지를 Server Component로 구현한다.",
+      "notes": "CTA 버튼은 Next.js Link + shadcn Button asChild 패턴 사용. 브랜드 컬러는 bg-brand 클래스 직접 사용. 아이콘: Search, FlaskConical, ShieldCheck (lucide-react).",
+      "status": "completed",
+      "dependencies": [
+        {
+          "taskId": "ed6082a7-822e-41ef-bcd9-ad06351ec36e"
+        }
+      ],
+      "createdAt": "2026-04-16T11:02:57.257Z",
+      "updatedAt": "2026-04-16T11:17:26.284Z",
+      "relatedFiles": [
+        {
+          "path": "components/landing/hero-section.tsx",
+          "type": "CREATE",
+          "description": "히어로 섹션 컴포넌트"
+        },
+        {
+          "path": "components/landing/how-it-works.tsx",
+          "type": "CREATE",
+          "description": "3단계 사용법 안내 섹션"
+        },
+        {
+          "path": "app/page.tsx",
+          "type": "TO_MODIFY",
+          "description": "랜딩 페이지 메인 구성",
+          "lineStart": 1,
+          "lineEnd": 8
+        },
+        {
+          "path": "components/ui/card.tsx",
+          "type": "DEPENDENCY",
+          "description": "HowItWorks 카드 UI"
+        },
+        {
+          "path": "components/ui/button.tsx",
+          "type": "DEPENDENCY",
+          "description": "CTA 버튼"
+        }
+      ],
+      "implementationGuide": "1. components/landing/hero-section.tsx (Server Component):\n   - 서비스 슬로건: '두 화장품, 함께 써도 괜찮을까?' (text-4xl font-bold)\n   - 부제: '성분 충돌을 분석해 민감한 피부를 지켜드립니다' (text-muted-foreground)\n   - CTA 버튼: Link href='/analyze' → Button variant='default' (bg-brand)\n   - 중앙 정렬, py-24 패딩\n2. components/landing/how-it-works.tsx (Server Component):\n   - 섹션 제목: '3단계로 끝나는 성분 분석'\n   - 카드 3개: 1)제품 선택 (Search 아이콘) 2)성분 분석 (FlaskConical 아이콘) 3)결과 확인 (ShieldCheck 아이콘)\n   - shadcn Card 컴포넌트 사용, 아이콘 lucide-react\n3. app/page.tsx 수정:\n   - HeroSection + HowItWorks 조합, main 태그로 감싸기",
+      "verificationCriteria": "/ 접속 시 히어로 섹션(슬로건+CTA), 3단계 카드 표시. '지금 분석하기' 클릭 시 /analyze 이동. 다크모드 정상. 1280px 기준 레이아웃 이상 없음.",
+      "analysisResult": "부딪(Budit) Phase 1 목업 UI 구현. API/DB 연결 없이 하드코딩 더미 데이터로 인터랙티브 프로토타입 구축. 스택: Next.js 15 App Router + TypeScript + shadcn/ui(new-york) + Tailwind CSS + useReducer 상태 관리. 공통 규칙: pnpm 전용, \"use client\" 최소화(Server Component 기본), 코드 주석 한국어, 커스텀 컬러(bg-brand/safe/caution/conflict) 활용, Desktop First 반응형.",
+      "summary": "HeroSection(슬로건+배지+CTA Link/Button asChild), HowItWorks(3단계 Card+lucide 아이콘) Server Component 구현 완료. app/page.tsx 조합. bg-brand/text-brand 커스텀 컬러 적용. pnpm build 정적 페이지(○) 생성 확인.",
+      "completedAt": "2026-04-16T11:17:26.283Z"
+    },
+    {
+      "id": "667d20d1-0348-4d64-98da-12fbccf2f253",
+      "name": "분석 페이지 상태 관리 및 골격 구현",
+      "description": "분석 페이지의 Server Shell과 useReducer 기반 Client Container를 구현한다. 상태 머신 로직과 단계 표시 컴포넌트를 포함한다.",
+      "notes": "START_ANALYZE 처리 시 setTimeout은 컴포넌트 내부에서 useCallback으로 처리하거나 reducer 외부 로직으로 분리. result 더미 데이터는 analyze-container 내부 상수로 정의.",
+      "status": "completed",
+      "dependencies": [
+        {
+          "taskId": "ac3fefbf-96ae-4217-ac31-141b4373002d"
+        },
+        {
+          "taskId": "ed6082a7-822e-41ef-bcd9-ad06351ec36e"
+        }
+      ],
+      "createdAt": "2026-04-16T11:02:57.257Z",
+      "updatedAt": "2026-04-16T11:17:29.004Z",
+      "relatedFiles": [
+        {
+          "path": "app/analyze/page.tsx",
+          "type": "CREATE",
+          "description": "분석 페이지 Server Shell"
+        },
+        {
+          "path": "components/analyze/analyze-container.tsx",
+          "type": "CREATE",
+          "description": "useReducer 상태 관리 Client Container"
+        },
+        {
+          "path": "components/analyze/step-indicator.tsx",
+          "type": "CREATE",
+          "description": "슬롯 A/B 단계 표시 컴포넌트"
+        },
+        {
+          "path": "types/analyze.ts",
+          "type": "DEPENDENCY",
+          "description": "공유 타입 정의"
+        }
+      ],
+      "implementationGuide": "1. app/analyze/page.tsx (Server Component):\n   - AnalyzeContainer import 후 렌더링만\n   - metadata export (title: '성분 분석 | 부딪')\n2. components/analyze/analyze-container.tsx ('use client'):\n   - types/analyze.ts에서 타입 import\n   - useReducer(analyzeReducer, initialState)\n   - initialState: { step: 'select-a', slotA: null, slotB: null, result: null }\n   - reducer 로직:\n     - SELECT_SLOT_A: slotA 설정, step → 'select-b'\n     - SELECT_SLOT_B: slotB 설정, step → 'ready'\n     - START_ANALYZE: step → 'analyzing' (setTimeout 1500ms 후 SET_RESULT dispatch)\n     - SET_RESULT: result 설정, step → 'result'\n     - RESET: initialState로 복귀\n   - StepIndicator, ProductSearch, ResultPanel, ManualInputDialog 조건부 렌더링\n3. components/analyze/step-indicator.tsx:\n   - step prop 수신\n   - 4단계 표시: 슬롯 A 선택 / 슬롯 B 선택 / 분석 준비 / 결과\n   - 현재 step 강조 (text-brand, font-semibold)",
+      "verificationCriteria": "/analyze 접속 시 StepIndicator와 초기 'select-a' 상태 표시. TypeScript 오류 없음. 상태 전환 로직 구조 확인 가능.",
+      "analysisResult": "부딪(Budit) Phase 1 목업 UI 구현. API/DB 연결 없이 하드코딩 더미 데이터로 인터랙티브 프로토타입 구축. 스택: Next.js 15 App Router + TypeScript + shadcn/ui(new-york) + Tailwind CSS + useReducer 상태 관리. 공통 규칙: pnpm 전용, \"use client\" 최소화(Server Component 기본), 코드 주석 한국어, 커스텀 컬러(bg-brand/safe/caution/conflict) 활용, Desktop First 반응형.",
+      "summary": "app/analyze/page.tsx(Server Shell), analyze-container.tsx(useReducer 상태머신 5단계, 더미 결과 상수, handleAnalyze setTimeout 1500ms), step-indicator.tsx(단계별 활성/완료 색상 표시) 구현 완료. pnpm build /analyze 정적 생성 확인. TypeScript 오류 없음.",
+      "completedAt": "2026-04-16T11:17:29.002Z"
+    },
+    {
+      "id": "3258f16f-6fb7-4c26-9349-a1647643ccc9",
+      "name": "제품 검색 UI 및 슬롯 선택 구현",
+      "description": "shadcn/ui Command 컴포넌트 기반 제품 검색 드롭다운과 슬롯 A/B 선택 인터랙션을 구현한다. 하드코딩 더미 제품 데이터 사용.",
+      "notes": "Command 컴포넌트 내 검색은 클라이언트 사이드 filter로 충분 (더미 데이터). Popover는 별도 shadcn 설치 필요 여부 확인 (command와 함께 설치되지 않을 경우 pnpm dlx shadcn@latest add popover 실행).",
+      "status": "completed",
+      "dependencies": [
+        {
+          "taskId": "667d20d1-0348-4d64-98da-12fbccf2f253"
+        }
+      ],
+      "createdAt": "2026-04-16T11:02:57.257Z",
+      "updatedAt": "2026-04-16T11:40:01.282Z",
+      "relatedFiles": [
+        {
+          "path": "components/analyze/product-search.tsx",
+          "type": "CREATE",
+          "description": "Command 기반 제품 검색 컴포넌트"
+        },
+        {
+          "path": "components/analyze/analyze-container.tsx",
+          "type": "TO_MODIFY",
+          "description": "ProductSearch 통합 및 슬롯 상태 렌더링 로직 추가"
+        },
+        {
+          "path": "components/ui/command.tsx",
+          "type": "DEPENDENCY",
+          "description": "검색 UI 기반 컴포넌트"
+        }
+      ],
+      "implementationGuide": "1. components/analyze/product-search.tsx ('use client'):\n   - props: { slotLabel: 'A' | 'B', onSelect: (slot: SlotData) => void }\n   - 더미 제품 배열 (상수):\n     [{id:'p1', name:'토리든 다이브인 세럼', brand:'토리든', category:'skincare'},\n      {id:'p2', name:'이니스프리 레티놀 앰플', brand:'이니스프리', category:'skincare'},\n      {id:'p3', name:'라운드랩 자작나무 수분크림', brand:'라운드랩', category:'skincare'},\n      {id:'p4', name:'닥터지 레드 블레미쉬 클리어 수딩 크림', brand:'닥터지', category:'skincare'},\n      {id:'p5', name:'코스알엑스 스네일 무친 에센스', brand:'코스알엑스', category:'skincare'}]\n   - Popover + Command 패턴 사용 (shadcn 권장 방식)\n   - CommandInput으로 필터링, CommandItem 클릭 시 onSelect 호출\n   - SlotData: { type: 'product', productId: item.id, productName: item.name, brand: item.brand }\n2. analyze-container.tsx에서 ProductSearch 통합:\n   - select-a 상태: SlotA용 ProductSearch 표시\n   - select-b 상태: 선택된 SlotA 표시 + SlotB용 ProductSearch 표시\n   - ready 상태: 양쪽 슬롯 표시 + '성분 충돌 분석' 버튼 활성화\n   - 직접 입력 버튼(Pencil 아이콘)도 각 슬롯 옆에 배치",
+      "verificationCriteria": "select-a 상태에서 검색창 표시 및 더미 제품 목록 드롭다운. 제품 선택 시 select-b로 전환, 슬롯 A 선택 내용 표시. 양쪽 선택 완료 시 '성분 충돌 분석' 버튼 활성화. TypeScript 오류 없음.",
+      "analysisResult": "부딪(Budit) Phase 1 목업 UI 구현. API/DB 연결 없이 하드코딩 더미 데이터로 인터랙티브 프로토타입 구축. 스택: Next.js 15 App Router + TypeScript + shadcn/ui(new-york) + Tailwind CSS + useReducer 상태 관리. 공통 규칙: pnpm 전용, \"use client\" 최소화(Server Component 기본), 코드 주석 한국어, 커스텀 컬러(bg-brand/safe/caution/conflict) 활용, Desktop First 반응형.",
+      "summary": "ProductSearch 컴포넌트(Popover+Command, 더미 제품 6개, 직접입력 버튼) 구현. AnalyzeContainer 전면 개편: SlotBadge(선택취소 X버튼), 슬롯A/B VS 레이아웃, 슬롯B 비활성 플레이스홀더, ready 상태에서 분석 버튼, analyzing 로딩 스피너. pnpm build 정상.",
+      "completedAt": "2026-04-16T11:40:01.281Z"
+    },
+    {
+      "id": "f8a1726d-5f3b-48ef-b1ec-49e1e0c1d58e",
+      "name": "분석 결과 패널 및 충돌 카드 구현",
+      "description": "충돌/시너지 결과를 표시하는 ResultPanel과 severity별 색상 ConflictCard를 구현한다. 더미 충돌 데이터로 결과 화면 완성.",
+      "notes": "bg-conflict/10은 Tailwind opacity 수식어. 커스텀 컬러에서 동작 안 할 경우 bg-conflict bg-opacity-10으로 대체. '돌아가기' 버튼은 RESET 액션 dispatch.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "3258f16f-6fb7-4c26-9349-a1647643ccc9"
+        }
+      ],
+      "createdAt": "2026-04-16T11:02:57.257Z",
+      "updatedAt": "2026-04-16T11:02:57.257Z",
+      "relatedFiles": [
+        {
+          "path": "components/analyze/conflict-card.tsx",
+          "type": "CREATE",
+          "description": "severity별 색상 충돌 카드 컴포넌트"
+        },
+        {
+          "path": "components/analyze/result-panel.tsx",
+          "type": "CREATE",
+          "description": "분석 결과 패널 컴포넌트"
+        },
+        {
+          "path": "components/analyze/analyze-container.tsx",
+          "type": "TO_MODIFY",
+          "description": "더미 결과 데이터 및 ResultPanel 통합"
+        },
+        {
+          "path": "types/analyze.ts",
+          "type": "DEPENDENCY",
+          "description": "ConflictResult, SynergyResult, AnalyzeResult 타입"
+        },
+        {
+          "path": "components/ui/card.tsx",
+          "type": "DEPENDENCY",
+          "description": "충돌 카드 UI 기반"
+        }
+      ],
+      "implementationGuide": "1. components/analyze/conflict-card.tsx:\n   - props: { conflict: ConflictResult }\n   - severity별 색상 매핑:\n     - high: 'bg-conflict/10 border-conflict text-conflict'\n     - medium: 'bg-caution/10 border-caution text-caution' (주황)\n     - low: 'bg-caution/10 border-caution text-caution' (노랑, opacity 조정)\n   - Card 컴포넌트 사용, 성분명 + 충돌 이유 + 권장사항 표시\n   - AlertTriangle 아이콘 (lucide-react)\n2. components/analyze/result-panel.tsx:\n   - props: { result: AnalyzeResult, slotAName: string, slotBName: string, onReset: () => void }\n   - 충돌 있음: ConflictCard 목록 + 루틴 분리 권장사항 텍스트\n   - 충돌 없음(conflicts.length === 0): bg-safe/10 안전 배지 + 시너지 목록\n   - ShieldCheck(safe) / AlertTriangle(conflict) 아이콘\n   - '돌아가기' 버튼 → onReset 호출\n3. analyze-container.tsx 더미 결과 데이터:\n   - DUMMY_CONFLICT_RESULT: conflicts=[{ingredientA:'레티놀', ingredientB:'비타민C', conflictType:'avoid', severity:'high', reasonKo:'레티놀과 비타민C는 산성 환경에서 레티놀 분해를 촉진합니다', recommend:'아침/저녁으로 분리 사용 권장'}, {ingredientA:'레티놀 계열', ingredientB:'AHA 계열', conflictType:'avoid', severity:'high', reasonKo:'AHA의 산성 pH가 레티놀을 불안정하게 만들어 자극을 유발합니다', recommend:'레티놀은 저녁, AHA는 다른 날 저녁 사용'}], synergies=[{ingredientA:'히알루론산', ingredientB:'세라마이드', reasonKo:'보습 효과 시너지: 수분 공급과 장벽 강화를 동시에'}]\n   - START_ANALYZE 시 setTimeout 1500ms → SET_RESULT(DUMMY_CONFLICT_RESULT)",
+      "verificationCriteria": "'성분 충돌 분석' 클릭 시 1.5초 로딩 후 결과 화면 전환. 충돌 카드 2개(고위험 빨강) + 시너지 1개 표시. '돌아가기' 클릭 시 select-a 초기화. severity 색상 정확히 적용.",
+      "analysisResult": "부딪(Budit) Phase 1 목업 UI 구현. API/DB 연결 없이 하드코딩 더미 데이터로 인터랙티브 프로토타입 구축. 스택: Next.js 15 App Router + TypeScript + shadcn/ui(new-york) + Tailwind CSS + useReducer 상태 관리. 공통 규칙: pnpm 전용, \"use client\" 최소화(Server Component 기본), 코드 주석 한국어, 커스텀 컬러(bg-brand/safe/caution/conflict) 활용, Desktop First 반응형."
+    },
+    {
+      "id": "c864a5c6-6742-48d6-b526-583bb7b9cfd2",
+      "name": "성분 직접 입력 다이얼로그 구현",
+      "description": "DB에 없는 제품의 성분을 쉼표 구분 텍스트로 입력하고 더미 매칭 결과를 미리보기하는 Dialog 컴포넌트를 구현한다.",
+      "notes": "Dialog open 상태는 analyze-container에서 관리 (ManualInputDialog 외부). 매칭 미리보기는 UX 향상용으로 실제 API 호출 없이 더미 로직만 사용. '직접 입력으로 슬롯 A/B 설정' 시 동일한 상태 전환 로직 적용.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "f8a1726d-5f3b-48ef-b1ec-49e1e0c1d58e"
+        }
+      ],
+      "createdAt": "2026-04-16T11:02:57.257Z",
+      "updatedAt": "2026-04-16T11:02:57.257Z",
+      "relatedFiles": [
+        {
+          "path": "components/analyze/manual-input-dialog.tsx",
+          "type": "CREATE",
+          "description": "성분 직접 입력 Dialog 컴포넌트"
+        },
+        {
+          "path": "components/analyze/analyze-container.tsx",
+          "type": "TO_MODIFY",
+          "description": "ManualInputDialog 통합 및 dialog 상태 관리"
+        },
+        {
+          "path": "components/ui/dialog.tsx",
+          "type": "DEPENDENCY",
+          "description": "Dialog 기반 컴포넌트"
+        },
+        {
+          "path": "components/ui/textarea.tsx",
+          "type": "DEPENDENCY",
+          "description": "성분 입력 textarea"
+        },
+        {
+          "path": "types/analyze.ts",
+          "type": "DEPENDENCY",
+          "description": "SlotData 타입"
+        }
+      ],
+      "implementationGuide": "1. components/analyze/manual-input-dialog.tsx ('use client'):\n   - props: { open: boolean, onOpenChange: (open: boolean) => void, slotLabel: 'A' | 'B', onConfirm: (slot: SlotData) => void }\n   - Dialog(shadcn) + Textarea 사용\n   - 내부 상태: inputText(string), parsedIngredients(string[]), matchPreview(boolean)\n   - 파싱 로직: inputText.split(',').map(s => s.trim()).filter(Boolean)\n   - 더미 매칭 로직: ['레티놀','비타민c','비타민C','나이아신아마이드','AHA','BHA','글리콜산'] 포함 시 matched, 나머지 unmatched\n   - '성분 확인' 버튼: matchPreview 상태로 전환, 매칭 성공/실패 목록 표시\n   - '분석에 사용' 버튼: onConfirm({ type: 'manual', productName: '직접 입력', ingredients: parsedIngredients }) 호출 후 dialog 닫기\n2. analyze-container.tsx에서 ManualInputDialog 통합:\n   - dialogOpen, dialogTargetSlot 상태 추가 (useState)\n   - 각 슬롯의 '직접 입력' 버튼 클릭 시 dialog 열기\n   - onConfirm 시 해당 슬롯(A 또는 B)에 SlotData 적용 → 단계 전환",
+      "verificationCriteria": "'직접 입력' 버튼 클릭 시 Dialog 열림. 성분 텍스트 입력 후 '성분 확인' 클릭 시 매칭/미매칭 목록 표시. '분석에 사용' 클릭 시 슬롯에 반영되고 단계 전환. ESC 또는 X 클릭 시 Dialog 닫힘.",
+      "analysisResult": "부딪(Budit) Phase 1 목업 UI 구현. API/DB 연결 없이 하드코딩 더미 데이터로 인터랙티브 프로토타입 구축. 스택: Next.js 15 App Router + TypeScript + shadcn/ui(new-york) + Tailwind CSS + useReducer 상태 관리. 공통 규칙: pnpm 전용, \"use client\" 최소화(Server Component 기본), 코드 주석 한국어, 커스텀 컬러(bg-brand/safe/caution/conflict) 활용, Desktop First 반응형."
+    }
+  ]
+}
