@@ -209,14 +209,14 @@
       "name": "분석 결과 패널 및 충돌 카드 구현",
       "description": "충돌/시너지 결과를 표시하는 ResultPanel과 severity별 색상 ConflictCard를 구현한다. 더미 충돌 데이터로 결과 화면 완성.",
       "notes": "bg-conflict/10은 Tailwind opacity 수식어. 커스텀 컬러에서 동작 안 할 경우 bg-conflict bg-opacity-10으로 대체. '돌아가기' 버튼은 RESET 액션 dispatch.",
-      "status": "pending",
+      "status": "completed",
       "dependencies": [
         {
           "taskId": "3258f16f-6fb7-4c26-9349-a1647643ccc9"
         }
       ],
       "createdAt": "2026-04-16T11:02:57.257Z",
-      "updatedAt": "2026-04-16T11:02:57.257Z",
+      "updatedAt": "2026-04-16T11:50:13.144Z",
       "relatedFiles": [
         {
           "path": "components/analyze/conflict-card.tsx",
@@ -246,21 +246,23 @@
       ],
       "implementationGuide": "1. components/analyze/conflict-card.tsx:\n   - props: { conflict: ConflictResult }\n   - severity별 색상 매핑:\n     - high: 'bg-conflict/10 border-conflict text-conflict'\n     - medium: 'bg-caution/10 border-caution text-caution' (주황)\n     - low: 'bg-caution/10 border-caution text-caution' (노랑, opacity 조정)\n   - Card 컴포넌트 사용, 성분명 + 충돌 이유 + 권장사항 표시\n   - AlertTriangle 아이콘 (lucide-react)\n2. components/analyze/result-panel.tsx:\n   - props: { result: AnalyzeResult, slotAName: string, slotBName: string, onReset: () => void }\n   - 충돌 있음: ConflictCard 목록 + 루틴 분리 권장사항 텍스트\n   - 충돌 없음(conflicts.length === 0): bg-safe/10 안전 배지 + 시너지 목록\n   - ShieldCheck(safe) / AlertTriangle(conflict) 아이콘\n   - '돌아가기' 버튼 → onReset 호출\n3. analyze-container.tsx 더미 결과 데이터:\n   - DUMMY_CONFLICT_RESULT: conflicts=[{ingredientA:'레티놀', ingredientB:'비타민C', conflictType:'avoid', severity:'high', reasonKo:'레티놀과 비타민C는 산성 환경에서 레티놀 분해를 촉진합니다', recommend:'아침/저녁으로 분리 사용 권장'}, {ingredientA:'레티놀 계열', ingredientB:'AHA 계열', conflictType:'avoid', severity:'high', reasonKo:'AHA의 산성 pH가 레티놀을 불안정하게 만들어 자극을 유발합니다', recommend:'레티놀은 저녁, AHA는 다른 날 저녁 사용'}], synergies=[{ingredientA:'히알루론산', ingredientB:'세라마이드', reasonKo:'보습 효과 시너지: 수분 공급과 장벽 강화를 동시에'}]\n   - START_ANALYZE 시 setTimeout 1500ms → SET_RESULT(DUMMY_CONFLICT_RESULT)",
       "verificationCriteria": "'성분 충돌 분석' 클릭 시 1.5초 로딩 후 결과 화면 전환. 충돌 카드 2개(고위험 빨강) + 시너지 1개 표시. '돌아가기' 클릭 시 select-a 초기화. severity 색상 정확히 적용.",
-      "analysisResult": "부딪(Budit) Phase 1 목업 UI 구현. API/DB 연결 없이 하드코딩 더미 데이터로 인터랙티브 프로토타입 구축. 스택: Next.js 15 App Router + TypeScript + shadcn/ui(new-york) + Tailwind CSS + useReducer 상태 관리. 공통 규칙: pnpm 전용, \"use client\" 최소화(Server Component 기본), 코드 주석 한국어, 커스텀 컬러(bg-brand/safe/caution/conflict) 활용, Desktop First 반응형."
+      "analysisResult": "부딪(Budit) Phase 1 목업 UI 구현. API/DB 연결 없이 하드코딩 더미 데이터로 인터랙티브 프로토타입 구축. 스택: Next.js 15 App Router + TypeScript + shadcn/ui(new-york) + Tailwind CSS + useReducer 상태 관리. 공통 규칙: pnpm 전용, \"use client\" 최소화(Server Component 기본), 코드 주석 한국어, 커스텀 컬러(bg-brand/safe/caution/conflict) 활용, Desktop First 반응형.",
+      "summary": "ConflictCard(severity별 색상 매핑), ResultPanel(충돌/시너지/안전 메시지/루틴 권장), AnalyzeContainer ResultPanel 통합 모두 완료. 타입체크 통과, 빌드 성공, 커밋 완료.",
+      "completedAt": "2026-04-16T11:50:13.143Z"
     },
     {
       "id": "c864a5c6-6742-48d6-b526-583bb7b9cfd2",
       "name": "성분 직접 입력 다이얼로그 구현",
       "description": "DB에 없는 제품의 성분을 쉼표 구분 텍스트로 입력하고 더미 매칭 결과를 미리보기하는 Dialog 컴포넌트를 구현한다.",
       "notes": "Dialog open 상태는 analyze-container에서 관리 (ManualInputDialog 외부). 매칭 미리보기는 UX 향상용으로 실제 API 호출 없이 더미 로직만 사용. '직접 입력으로 슬롯 A/B 설정' 시 동일한 상태 전환 로직 적용.",
-      "status": "pending",
+      "status": "completed",
       "dependencies": [
         {
           "taskId": "f8a1726d-5f3b-48ef-b1ec-49e1e0c1d58e"
         }
       ],
       "createdAt": "2026-04-16T11:02:57.257Z",
-      "updatedAt": "2026-04-16T11:02:57.257Z",
+      "updatedAt": "2026-04-16T11:51:28.161Z",
       "relatedFiles": [
         {
           "path": "components/analyze/manual-input-dialog.tsx",
@@ -290,7 +292,138 @@
       ],
       "implementationGuide": "1. components/analyze/manual-input-dialog.tsx ('use client'):\n   - props: { open: boolean, onOpenChange: (open: boolean) => void, slotLabel: 'A' | 'B', onConfirm: (slot: SlotData) => void }\n   - Dialog(shadcn) + Textarea 사용\n   - 내부 상태: inputText(string), parsedIngredients(string[]), matchPreview(boolean)\n   - 파싱 로직: inputText.split(',').map(s => s.trim()).filter(Boolean)\n   - 더미 매칭 로직: ['레티놀','비타민c','비타민C','나이아신아마이드','AHA','BHA','글리콜산'] 포함 시 matched, 나머지 unmatched\n   - '성분 확인' 버튼: matchPreview 상태로 전환, 매칭 성공/실패 목록 표시\n   - '분석에 사용' 버튼: onConfirm({ type: 'manual', productName: '직접 입력', ingredients: parsedIngredients }) 호출 후 dialog 닫기\n2. analyze-container.tsx에서 ManualInputDialog 통합:\n   - dialogOpen, dialogTargetSlot 상태 추가 (useState)\n   - 각 슬롯의 '직접 입력' 버튼 클릭 시 dialog 열기\n   - onConfirm 시 해당 슬롯(A 또는 B)에 SlotData 적용 → 단계 전환",
       "verificationCriteria": "'직접 입력' 버튼 클릭 시 Dialog 열림. 성분 텍스트 입력 후 '성분 확인' 클릭 시 매칭/미매칭 목록 표시. '분석에 사용' 클릭 시 슬롯에 반영되고 단계 전환. ESC 또는 X 클릭 시 Dialog 닫힘.",
-      "analysisResult": "부딪(Budit) Phase 1 목업 UI 구현. API/DB 연결 없이 하드코딩 더미 데이터로 인터랙티브 프로토타입 구축. 스택: Next.js 15 App Router + TypeScript + shadcn/ui(new-york) + Tailwind CSS + useReducer 상태 관리. 공통 규칙: pnpm 전용, \"use client\" 최소화(Server Component 기본), 코드 주석 한국어, 커스텀 컬러(bg-brand/safe/caution/conflict) 활용, Desktop First 반응형."
+      "analysisResult": "부딪(Budit) Phase 1 목업 UI 구현. API/DB 연결 없이 하드코딩 더미 데이터로 인터랙티브 프로토타입 구축. 스택: Next.js 15 App Router + TypeScript + shadcn/ui(new-york) + Tailwind CSS + useReducer 상태 관리. 공통 규칙: pnpm 전용, \"use client\" 최소화(Server Component 기본), 코드 주석 한국어, 커스텀 컬러(bg-brand/safe/caution/conflict) 활용, Desktop First 반응형.",
+      "summary": "ManualInputDialog 구현 완료. Dialog + Textarea, 더미 매칭 미리보기(matched/unmatched 분류), dialogOpen/dialogTargetSlot 상태로 AnalyzeContainer에 통합. 타입체크 통과, 빌드 성공.",
+      "completedAt": "2026-04-16T11:51:28.159Z"
+    },
+    {
+      "id": "04ada2aa-08e0-4ea1-ac7f-47a50548b48b",
+      "name": "Supabase DB 스키마 마이그레이션 실행",
+      "description": "docs/DB_SCHEMA.md에 정의된 SQL을 Supabase MCP를 통해 실행하여 8개 테이블, 인덱스, RLS 정책, 트리거를 생성한다.\n\n생성 대상:\n- pg_trgm 확장\n- update_updated_at_column 트리거 함수\n- 8개 테이블: products, ingredients, ingredient_groups, ingredient_group_members, product_ingredients, conflict_rules, ingredient_aliases, unmatched_log\n- GIN 트라이그램 인덱스 12개\n- RLS 활성화 + anon 읽기 정책 7개 (unmatched_log 제외)\n\n수락 기준:\n- mcp__supabase__list_tables 결과에 8개 테이블 모두 존재\n- mcp__supabase__execute_sql로 SELECT count(*) FROM information_schema.tables WHERE table_schema='public' 결과 8 이상",
+      "notes": "docs/DB_SCHEMA.md의 'SQL 스키마' 및 '인덱스' 및 'RLS 정책' 섹션 SQL을 순서대로 하나의 migration query에 통합하여 실행. conflict_rules의 UNIQUE NULLS NOT DISTINCT는 PostgreSQL 15+ 문법이므로 Supabase 버전 확인 필요.",
+      "status": "pending",
+      "dependencies": [],
+      "createdAt": "2026-04-20T05:53:47.586Z",
+      "updatedAt": "2026-04-20T05:53:47.586Z",
+      "relatedFiles": [
+        {
+          "path": "docs/DB_SCHEMA.md",
+          "type": "REFERENCE",
+          "description": "전체 SQL 스키마 정의 (CREATE TABLE, INDEX, RLS, TRIGGER)",
+          "lineStart": 226,
+          "lineEnd": 440
+        }
+      ],
+      "implementationGuide": "1. mcp__supabase__apply_migration 호출\n   - name: 'phase2_initial_schema'\n   - query: docs/DB_SCHEMA.md의 SQL 섹션 전체 (확장 → 트리거 함수 → 8개 테이블 CREATE → 인덱스 → RLS)\n2. mcp__supabase__list_tables로 생성 결과 확인\n3. 오류 발생 시 mcp__supabase__execute_sql로 개별 구문 디버깅",
+      "verificationCriteria": "mcp__supabase__list_tables 결과에 products, ingredients, ingredient_groups, ingredient_group_members, product_ingredients, conflict_rules, ingredient_aliases, unmatched_log 8개 테이블 모두 존재. mcp__supabase__get_advisors로 보안 경고 없음 확인.",
+      "analysisResult": "Phase 2: DB 스키마 + 시드 인프라 구축. docs/DB_SCHEMA.md에 완성된 SQL 스키마 존재. data/toyfiles/ 시드 데이터 준비 완료. @supabase/supabase-js 설치됨. shrimp-rules.md 기준: pnpm 전용, any 금지, 한국어 주석, lib/database.types.ts 경로."
+    },
+    {
+      "id": "59fdcd68-f2f5-4663-9db5-3a449d514cff",
+      "name": "Supabase TypeScript 타입 자동 생성",
+      "description": "mcp__supabase__generate_typescript_types를 실행하여 DB 스키마 기반 TypeScript 타입을 자동 생성하고 lib/database.types.ts에 저장한다.\n\n생성 결과:\n- lib/database.types.ts: Supabase 자동 생성 타입 (Database, Tables, Insert, Update 등)\n- 기존 types/analyze.ts는 앱 도메인 타입으로 유지 (덮어쓰지 않음)\n\n수락 기준:\n- lib/database.types.ts 파일 생성\n- pnpm type-check 오류 없음",
+      "notes": "저장 경로는 shrimp-rules.md에 명시된 lib/database.types.ts. types/analyze.ts의 기존 ConflictResult 등 앱 레이어 타입과 레이어 분리 유지.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "04ada2aa-08e0-4ea1-ac7f-47a50548b48b"
+        }
+      ],
+      "createdAt": "2026-04-20T05:53:47.586Z",
+      "updatedAt": "2026-04-20T05:53:47.586Z",
+      "relatedFiles": [
+        {
+          "path": "lib/database.types.ts",
+          "type": "CREATE",
+          "description": "Supabase 자동 생성 TypeScript 타입 파일"
+        },
+        {
+          "path": "types/analyze.ts",
+          "type": "REFERENCE",
+          "description": "기존 앱 도메인 타입 (덮어쓰지 않음)"
+        },
+        {
+          "path": "shrimp-rules.md",
+          "type": "REFERENCE",
+          "description": "타입 저장 경로 규칙 명시",
+          "lineStart": 195,
+          "lineEnd": 200
+        }
+      ],
+      "implementationGuide": "1. mcp__supabase__generate_typescript_types 호출\n2. 반환된 타입 문자열을 lib/database.types.ts로 Write 저장\n3. pnpm type-check 실행하여 타입 오류 없음 확인",
+      "verificationCriteria": "lib/database.types.ts 파일 존재. 파일 내 Database 인터페이스와 public 스키마의 8개 테이블 타입 포함. pnpm type-check 통과.",
+      "analysisResult": "Phase 2: DB 스키마 + 시드 인프라 구축. docs/DB_SCHEMA.md에 완성된 SQL 스키마 존재. data/toyfiles/ 시드 데이터 준비 완료. @supabase/supabase-js 설치됨. shrimp-rules.md 기준: pnpm 전용, any 금지, 한국어 주석, lib/database.types.ts 경로."
+    },
+    {
+      "id": "515eccbe-c0e6-4b0e-9e02-af9b38459ceb",
+      "name": "시드 스크립트 구현 및 실행",
+      "description": "toyfiles/ + data/csv/ 데이터를 Supabase에 삽입하는 TypeScript 시드 스크립트를 구현하고 실행한다.\n\n데이터 소스:\n- data/toyfiles/toy_ingredients.csv → ingredients 테이블 (128개)\n- data/csv/ingredient_groups.csv → ingredient_groups 테이블 (8개)\n- data/csv/ingredient_group_members.csv → ingredient_group_members 테이블 (DB에 있는 성분만)\n- data/csv/ingredient_aliases.csv → ingredient_aliases 테이블 (DB에 있는 성분만)\n- data/toyfiles/toy_products.csv → products 테이블 (6개)\n- data/toyfiles/toy_product_ingredients.csv → product_ingredients 테이블 (222개)\n- data/csv/conflict_rules.csv → conflict_rules 테이블 (13개)\n\n수락 기준:\n- pnpm seed 실행 성공 (오류 없음)\n- 각 테이블 row count: ingredients=128, ingredient_groups=8, products=6, product_ingredients=222, conflict_rules=13\n- DB_SCHEMA.md의 integrity check 쿼리 결과 0행",
+      "notes": "CSV 파싱 시 1,2-헥산다이올처럼 값 내부에 쉼표가 있는 경우 따옴표 처리 필수. is_restricted 컬럼은 CSV의 'TRUE'/'FALSE' 문자열을 boolean으로 변환. conflict_rules의 severity 빈 문자열은 null로 변환. SUPABASE_SERVICE_ROLE_KEY는 .gitignore에 이미 포함된 .env.local에만 저장.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "04ada2aa-08e0-4ea1-ac7f-47a50548b48b"
+        }
+      ],
+      "createdAt": "2026-04-20T05:53:47.586Z",
+      "updatedAt": "2026-04-20T05:53:47.586Z",
+      "relatedFiles": [
+        {
+          "path": "scripts/seed/index.ts",
+          "type": "CREATE",
+          "description": "메인 시드 스크립트"
+        },
+        {
+          "path": "data/toyfiles/toy_ingredients.csv",
+          "type": "DEPENDENCY",
+          "description": "128개 성분 시드 데이터"
+        },
+        {
+          "path": "data/toyfiles/toy_products.csv",
+          "type": "DEPENDENCY",
+          "description": "6개 제품 시드 데이터"
+        },
+        {
+          "path": "data/toyfiles/toy_product_ingredients.csv",
+          "type": "DEPENDENCY",
+          "description": "222개 성분 매핑 시드 데이터"
+        },
+        {
+          "path": "data/csv/ingredient_groups.csv",
+          "type": "DEPENDENCY",
+          "description": "8개 성분 그룹"
+        },
+        {
+          "path": "data/csv/ingredient_group_members.csv",
+          "type": "DEPENDENCY",
+          "description": "성분-그룹 매핑 (부분 스킵 예정)"
+        },
+        {
+          "path": "data/csv/ingredient_aliases.csv",
+          "type": "DEPENDENCY",
+          "description": "성분 별칭 (부분 스킵 예정)"
+        },
+        {
+          "path": "data/csv/conflict_rules.csv",
+          "type": "DEPENDENCY",
+          "description": "13개 충돌/시너지 규칙"
+        },
+        {
+          "path": "package.json",
+          "type": "TO_MODIFY",
+          "description": "seed 스크립트 추가"
+        },
+        {
+          "path": "docs/DB_SCHEMA.md",
+          "type": "REFERENCE",
+          "description": "integrity check 검증 쿼리",
+          "lineStart": 415,
+          "lineEnd": 439
+        }
+      ],
+      "implementationGuide": "1. pnpm add -D tsx 설치\n2. package.json scripts에 추가:\n   { \"seed\": \"tsx scripts/seed/index.ts\" }\n3. .env.local에 SUPABASE_SERVICE_ROLE_KEY 확인 (없으면 Supabase 대시보드에서 복사 안내)\n4. scripts/seed/index.ts 구현 pseudocode:\n\n   // CSV 파싱 헬퍼 (fs.readFileSync + 줄/쉼표 분리, 따옴표 처리)\n   function parseCsv(filePath): Record<string, string>[]\n\n   // Supabase service_role 클라이언트 생성\n   const supabase = createClient(url, serviceRoleKey)\n\n   // 1단계: ingredients upsert (onConflict: 'name')\n   const ingredientRows = parseCsv('data/toyfiles/toy_ingredients.csv')\n   await supabase.from('ingredients').upsert(ingredientRows, {onConflict: 'name'})\n\n   // ingredients name→id 맵 구성 (이후 FK 변환용)\n   const ingredientMap = Map<name, id>\n\n   // 2단계: ingredient_groups upsert (onConflict: 'group_name')\n   const groupRows = parseCsv('data/csv/ingredient_groups.csv')\n   await supabase.from('ingredient_groups').upsert(groupRows, {onConflict: 'group_name'})\n\n   // group_name→id 맵 구성\n   const groupMap = Map<group_name, id>\n\n   // 3단계: ingredient_group_members\n   // ingredientMap에 있는 것만 INSERT, 없으면 skip + skippedMembers 배열 기록\n   for each member in parseCsv('data/csv/ingredient_group_members.csv'):\n     if ingredientMap.has(member.ingredient_name):\n       INSERT {group_id, ingredient_id}\n     else:\n       skippedMembers.push(member.ingredient_name)\n\n   // 4단계: ingredient_aliases\n   // ingredientMap에 있는 것만 INSERT, 없으면 skip + skippedAliases 배열 기록\n   for each alias in parseCsv('data/csv/ingredient_aliases.csv'):\n     if ingredientMap.has(alias.ingredient_name):\n       INSERT {alias, ingredient_id, source}\n     else:\n       skippedAliases.push(alias.alias)\n\n   // 5단계: products upsert (onConflict: 'oliveyoung_id')\n   const productRows = parseCsv('data/toyfiles/toy_products.csv')\n   await supabase.from('products').upsert(productRows, {onConflict: 'oliveyoung_id'})\n\n   // product name→id 맵 구성\n   const productMap = Map<name, id>\n\n   // 6단계: product_ingredients upsert\n   for each row in parseCsv('data/toyfiles/toy_product_ingredients.csv'):\n     resolve product_id, ingredient_id from maps\n     INSERT {product_id, ingredient_id, display_order, raw_name}\n\n   // 7단계: conflict_rules\n   for each rule in parseCsv('data/csv/conflict_rules.csv'):\n     canonical 정렬: [a, b].sort() 적용\n     INSERT rule\n\n   // 8단계: row count 검증 출력\n   for each table: SELECT count(*) → console.log\n\n   // 스킵 내역 출력\n   console.log('skippedMembers:', skippedMembers)\n   console.log('skippedAliases:', skippedAliases)\n\n5. pnpm seed 실행\n6. mcp__supabase__execute_sql로 DB_SCHEMA.md integrity check 쿼리 실행 → 0행 확인",
+      "verificationCriteria": "pnpm seed 실행 시 오류 없음. 테이블별 row count: ingredients=128, ingredient_groups=8, products=6, product_ingredients=222, conflict_rules=13. integrity check 쿼리 0행. skippedMembers/skippedAliases 목록 콘솔 출력.",
+      "analysisResult": "Phase 2: DB 스키마 + 시드 인프라 구축. docs/DB_SCHEMA.md에 완성된 SQL 스키마 존재. data/toyfiles/ 시드 데이터 준비 완료. @supabase/supabase-js 설치됨. shrimp-rules.md 기준: pnpm 전용, any 금지, 한국어 주석, lib/database.types.ts 경로."
     }
   ]
 }
