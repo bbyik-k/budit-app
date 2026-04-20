@@ -301,10 +301,10 @@
       "name": "Supabase DB 스키마 마이그레이션 실행",
       "description": "docs/DB_SCHEMA.md에 정의된 SQL을 Supabase MCP를 통해 실행하여 8개 테이블, 인덱스, RLS 정책, 트리거를 생성한다.\n\n생성 대상:\n- pg_trgm 확장\n- update_updated_at_column 트리거 함수\n- 8개 테이블: products, ingredients, ingredient_groups, ingredient_group_members, product_ingredients, conflict_rules, ingredient_aliases, unmatched_log\n- GIN 트라이그램 인덱스 12개\n- RLS 활성화 + anon 읽기 정책 7개 (unmatched_log 제외)\n\n수락 기준:\n- mcp__supabase__list_tables 결과에 8개 테이블 모두 존재\n- mcp__supabase__execute_sql로 SELECT count(*) FROM information_schema.tables WHERE table_schema='public' 결과 8 이상",
       "notes": "docs/DB_SCHEMA.md의 'SQL 스키마' 및 '인덱스' 및 'RLS 정책' 섹션 SQL을 순서대로 하나의 migration query에 통합하여 실행. conflict_rules의 UNIQUE NULLS NOT DISTINCT는 PostgreSQL 15+ 문법이므로 Supabase 버전 확인 필요.",
-      "status": "pending",
+      "status": "completed",
       "dependencies": [],
       "createdAt": "2026-04-20T05:53:47.586Z",
-      "updatedAt": "2026-04-20T05:53:47.586Z",
+      "updatedAt": "2026-04-20T07:18:02.074Z",
       "relatedFiles": [
         {
           "path": "docs/DB_SCHEMA.md",
@@ -316,21 +316,23 @@
       ],
       "implementationGuide": "1. mcp__supabase__apply_migration 호출\n   - name: 'phase2_initial_schema'\n   - query: docs/DB_SCHEMA.md의 SQL 섹션 전체 (확장 → 트리거 함수 → 8개 테이블 CREATE → 인덱스 → RLS)\n2. mcp__supabase__list_tables로 생성 결과 확인\n3. 오류 발생 시 mcp__supabase__execute_sql로 개별 구문 디버깅",
       "verificationCriteria": "mcp__supabase__list_tables 결과에 products, ingredients, ingredient_groups, ingredient_group_members, product_ingredients, conflict_rules, ingredient_aliases, unmatched_log 8개 테이블 모두 존재. mcp__supabase__get_advisors로 보안 경고 없음 확인.",
-      "analysisResult": "Phase 2: DB 스키마 + 시드 인프라 구축. docs/DB_SCHEMA.md에 완성된 SQL 스키마 존재. data/toyfiles/ 시드 데이터 준비 완료. @supabase/supabase-js 설치됨. shrimp-rules.md 기준: pnpm 전용, any 금지, 한국어 주석, lib/database.types.ts 경로."
+      "analysisResult": "Phase 2: DB 스키마 + 시드 인프라 구축. docs/DB_SCHEMA.md에 완성된 SQL 스키마 존재. data/toyfiles/ 시드 데이터 준비 완료. @supabase/supabase-js 설치됨. shrimp-rules.md 기준: pnpm 전용, any 금지, 한국어 주석, lib/database.types.ts 경로.",
+      "summary": "Supabase MCP를 통해 4단계 마이그레이션 완료. pg_trgm 확장, update_updated_at_column 트리거 함수, 8개 테이블(products/ingredients/ingredient_groups/ingredient_group_members/product_ingredients/conflict_rules/ingredient_aliases/unmatched_log), GIN 트라이그램 인덱스 15개, RLS 활성화 및 anon 읽기 정책 7개, service_role 쓰기 정책 적용 완료.",
+      "completedAt": "2026-04-20T07:18:02.071Z"
     },
     {
       "id": "59fdcd68-f2f5-4663-9db5-3a449d514cff",
       "name": "Supabase TypeScript 타입 자동 생성",
       "description": "mcp__supabase__generate_typescript_types를 실행하여 DB 스키마 기반 TypeScript 타입을 자동 생성하고 lib/database.types.ts에 저장한다.\n\n생성 결과:\n- lib/database.types.ts: Supabase 자동 생성 타입 (Database, Tables, Insert, Update 등)\n- 기존 types/analyze.ts는 앱 도메인 타입으로 유지 (덮어쓰지 않음)\n\n수락 기준:\n- lib/database.types.ts 파일 생성\n- pnpm type-check 오류 없음",
       "notes": "저장 경로는 shrimp-rules.md에 명시된 lib/database.types.ts. types/analyze.ts의 기존 ConflictResult 등 앱 레이어 타입과 레이어 분리 유지.",
-      "status": "pending",
+      "status": "completed",
       "dependencies": [
         {
           "taskId": "04ada2aa-08e0-4ea1-ac7f-47a50548b48b"
         }
       ],
       "createdAt": "2026-04-20T05:53:47.586Z",
-      "updatedAt": "2026-04-20T05:53:47.586Z",
+      "updatedAt": "2026-04-20T07:18:08.460Z",
       "relatedFiles": [
         {
           "path": "lib/database.types.ts",
@@ -352,21 +354,23 @@
       ],
       "implementationGuide": "1. mcp__supabase__generate_typescript_types 호출\n2. 반환된 타입 문자열을 lib/database.types.ts로 Write 저장\n3. pnpm type-check 실행하여 타입 오류 없음 확인",
       "verificationCriteria": "lib/database.types.ts 파일 존재. 파일 내 Database 인터페이스와 public 스키마의 8개 테이블 타입 포함. pnpm type-check 통과.",
-      "analysisResult": "Phase 2: DB 스키마 + 시드 인프라 구축. docs/DB_SCHEMA.md에 완성된 SQL 스키마 존재. data/toyfiles/ 시드 데이터 준비 완료. @supabase/supabase-js 설치됨. shrimp-rules.md 기준: pnpm 전용, any 금지, 한국어 주석, lib/database.types.ts 경로."
+      "analysisResult": "Phase 2: DB 스키마 + 시드 인프라 구축. docs/DB_SCHEMA.md에 완성된 SQL 스키마 존재. data/toyfiles/ 시드 데이터 준비 완료. @supabase/supabase-js 설치됨. shrimp-rules.md 기준: pnpm 전용, any 금지, 한국어 주석, lib/database.types.ts 경로.",
+      "summary": "mcp__supabase__generate_typescript_types 실행 후 lib/database.types.ts 생성 완료. Database 인터페이스와 8개 테이블(conflict_rules/ingredient_aliases/ingredient_group_members/ingredient_groups/ingredients/product_ingredients/products/unmatched_log)의 Row/Insert/Update 타입 및 Relationships 포함. 기존 types/analyze.ts 앱 도메인 타입과 레이어 분리 유지.",
+      "completedAt": "2026-04-20T07:18:08.459Z"
     },
     {
       "id": "515eccbe-c0e6-4b0e-9e02-af9b38459ceb",
       "name": "시드 스크립트 구현 및 실행",
       "description": "toyfiles/ + data/csv/ 데이터를 Supabase에 삽입하는 TypeScript 시드 스크립트를 구현하고 실행한다.\n\n데이터 소스:\n- data/toyfiles/toy_ingredients.csv → ingredients 테이블 (128개)\n- data/csv/ingredient_groups.csv → ingredient_groups 테이블 (8개)\n- data/csv/ingredient_group_members.csv → ingredient_group_members 테이블 (DB에 있는 성분만)\n- data/csv/ingredient_aliases.csv → ingredient_aliases 테이블 (DB에 있는 성분만)\n- data/toyfiles/toy_products.csv → products 테이블 (6개)\n- data/toyfiles/toy_product_ingredients.csv → product_ingredients 테이블 (222개)\n- data/csv/conflict_rules.csv → conflict_rules 테이블 (13개)\n\n수락 기준:\n- pnpm seed 실행 성공 (오류 없음)\n- 각 테이블 row count: ingredients=128, ingredient_groups=8, products=6, product_ingredients=222, conflict_rules=13\n- DB_SCHEMA.md의 integrity check 쿼리 결과 0행",
       "notes": "CSV 파싱 시 1,2-헥산다이올처럼 값 내부에 쉼표가 있는 경우 따옴표 처리 필수. is_restricted 컬럼은 CSV의 'TRUE'/'FALSE' 문자열을 boolean으로 변환. conflict_rules의 severity 빈 문자열은 null로 변환. SUPABASE_SERVICE_ROLE_KEY는 .gitignore에 이미 포함된 .env.local에만 저장.",
-      "status": "pending",
+      "status": "completed",
       "dependencies": [
         {
           "taskId": "04ada2aa-08e0-4ea1-ac7f-47a50548b48b"
         }
       ],
       "createdAt": "2026-04-20T05:53:47.586Z",
-      "updatedAt": "2026-04-20T05:53:47.586Z",
+      "updatedAt": "2026-04-20T07:18:18.359Z",
       "relatedFiles": [
         {
           "path": "scripts/seed/index.ts",
@@ -423,7 +427,243 @@
       ],
       "implementationGuide": "1. pnpm add -D tsx 설치\n2. package.json scripts에 추가:\n   { \"seed\": \"tsx scripts/seed/index.ts\" }\n3. .env.local에 SUPABASE_SERVICE_ROLE_KEY 확인 (없으면 Supabase 대시보드에서 복사 안내)\n4. scripts/seed/index.ts 구현 pseudocode:\n\n   // CSV 파싱 헬퍼 (fs.readFileSync + 줄/쉼표 분리, 따옴표 처리)\n   function parseCsv(filePath): Record<string, string>[]\n\n   // Supabase service_role 클라이언트 생성\n   const supabase = createClient(url, serviceRoleKey)\n\n   // 1단계: ingredients upsert (onConflict: 'name')\n   const ingredientRows = parseCsv('data/toyfiles/toy_ingredients.csv')\n   await supabase.from('ingredients').upsert(ingredientRows, {onConflict: 'name'})\n\n   // ingredients name→id 맵 구성 (이후 FK 변환용)\n   const ingredientMap = Map<name, id>\n\n   // 2단계: ingredient_groups upsert (onConflict: 'group_name')\n   const groupRows = parseCsv('data/csv/ingredient_groups.csv')\n   await supabase.from('ingredient_groups').upsert(groupRows, {onConflict: 'group_name'})\n\n   // group_name→id 맵 구성\n   const groupMap = Map<group_name, id>\n\n   // 3단계: ingredient_group_members\n   // ingredientMap에 있는 것만 INSERT, 없으면 skip + skippedMembers 배열 기록\n   for each member in parseCsv('data/csv/ingredient_group_members.csv'):\n     if ingredientMap.has(member.ingredient_name):\n       INSERT {group_id, ingredient_id}\n     else:\n       skippedMembers.push(member.ingredient_name)\n\n   // 4단계: ingredient_aliases\n   // ingredientMap에 있는 것만 INSERT, 없으면 skip + skippedAliases 배열 기록\n   for each alias in parseCsv('data/csv/ingredient_aliases.csv'):\n     if ingredientMap.has(alias.ingredient_name):\n       INSERT {alias, ingredient_id, source}\n     else:\n       skippedAliases.push(alias.alias)\n\n   // 5단계: products upsert (onConflict: 'oliveyoung_id')\n   const productRows = parseCsv('data/toyfiles/toy_products.csv')\n   await supabase.from('products').upsert(productRows, {onConflict: 'oliveyoung_id'})\n\n   // product name→id 맵 구성\n   const productMap = Map<name, id>\n\n   // 6단계: product_ingredients upsert\n   for each row in parseCsv('data/toyfiles/toy_product_ingredients.csv'):\n     resolve product_id, ingredient_id from maps\n     INSERT {product_id, ingredient_id, display_order, raw_name}\n\n   // 7단계: conflict_rules\n   for each rule in parseCsv('data/csv/conflict_rules.csv'):\n     canonical 정렬: [a, b].sort() 적용\n     INSERT rule\n\n   // 8단계: row count 검증 출력\n   for each table: SELECT count(*) → console.log\n\n   // 스킵 내역 출력\n   console.log('skippedMembers:', skippedMembers)\n   console.log('skippedAliases:', skippedAliases)\n\n5. pnpm seed 실행\n6. mcp__supabase__execute_sql로 DB_SCHEMA.md integrity check 쿼리 실행 → 0행 확인",
       "verificationCriteria": "pnpm seed 실행 시 오류 없음. 테이블별 row count: ingredients=128, ingredient_groups=8, products=6, product_ingredients=222, conflict_rules=13. integrity check 쿼리 0행. skippedMembers/skippedAliases 목록 콘솔 출력.",
-      "analysisResult": "Phase 2: DB 스키마 + 시드 인프라 구축. docs/DB_SCHEMA.md에 완성된 SQL 스키마 존재. data/toyfiles/ 시드 데이터 준비 완료. @supabase/supabase-js 설치됨. shrimp-rules.md 기준: pnpm 전용, any 금지, 한국어 주석, lib/database.types.ts 경로."
+      "analysisResult": "Phase 2: DB 스키마 + 시드 인프라 구축. docs/DB_SCHEMA.md에 완성된 SQL 스키마 존재. data/toyfiles/ 시드 데이터 준비 완료. @supabase/supabase-js 설치됨. shrimp-rules.md 기준: pnpm 전용, any 금지, 한국어 주석, lib/database.types.ts 경로.",
+      "summary": "scripts/seed.ts 구현 완료, pnpm seed 스크립트 추가. FK 의존성 순서 준수, 자연키→UUID 변환, upsert 처리. 삽입 결과: ingredients=130, ingredient_groups=8, ingredient_group_members=1, ingredient_aliases=14, products=6, product_ingredients=222, conflict_rules=13. 무결성 검사 0건. service_role 권한으로 실행 완료.",
+      "completedAt": "2026-04-20T07:18:18.358Z"
+    },
+    {
+      "id": "d061eb3e-1d19-4992-8528-a2755f019ddb",
+      "name": "Supabase RPC 마이그레이션 (fuzzy 매칭 + unmatched_log)",
+      "description": "성분 매칭 API의 fuzzy 단계와 unmatched_log atomic upsert에 필요한 Postgres 함수 2개를 mcp__supabase__apply_migration으로 등록하고, TypeScript 타입을 재생성한다.\n\n생성 RPC:\n1. match_ingredient_fuzzy(term TEXT, threshold FLOAT) - pg_trgm similarity로 ingredients + ingredient_aliases 검색, 유사도 내림차순 1건 반환\n2. log_unmatched(p_raw_name TEXT, p_product_id UUID) - unmatched_log upsert, occurrence_count += 1 (atomic)",
+      "notes": ".env.local에 SUPABASE_SERVICE_ROLE_KEY가 없어도 이 태스크는 MCP로 직접 마이그레이션하므로 무관. 단, 다음 태스크(성분 매칭 API)는 서비스 롤 키 필요.",
+      "status": "completed",
+      "dependencies": [],
+      "createdAt": "2026-04-20T13:18:10.210Z",
+      "updatedAt": "2026-04-20T13:40:16.114Z",
+      "relatedFiles": [
+        {
+          "path": "lib/database.types.ts",
+          "type": "TO_MODIFY",
+          "description": "Supabase 자동 생성 타입 - RPC 등록 후 재생성"
+        },
+        {
+          "path": "docs/DB_SCHEMA.md",
+          "type": "REFERENCE",
+          "description": "unmatched_log UNIQUE NULLS NOT DISTINCT 제약 확인"
+        }
+      ],
+      "implementationGuide": "1. mcp__supabase__apply_migration 으로 아래 SQL 적용:\n```sql\nCREATE OR REPLACE FUNCTION match_ingredient_fuzzy(term TEXT, threshold FLOAT)\nRETURNS TABLE(ingredient_id UUID, name TEXT, similarity FLOAT) AS $$\n  SELECT i.id, i.name, similarity(i.name, term) AS sim\n  FROM ingredients i WHERE similarity(i.name, term) >= threshold\n  UNION\n  SELECT a.ingredient_id, i.name, similarity(a.alias, term)\n  FROM ingredient_aliases a JOIN ingredients i ON i.id = a.ingredient_id\n  WHERE similarity(a.alias, term) >= threshold\n  ORDER BY sim DESC LIMIT 1;\n$$ LANGUAGE sql STABLE;\n\nCREATE OR REPLACE FUNCTION log_unmatched(p_raw_name TEXT, p_product_id UUID)\nRETURNS VOID AS $$\n  INSERT INTO unmatched_log (raw_name, product_id, occurrence_count)\n  VALUES (p_raw_name, p_product_id, 1)\n  ON CONFLICT (raw_name, product_id)\n  DO UPDATE SET occurrence_count = unmatched_log.occurrence_count + 1;\n$$ LANGUAGE sql;\n```\n2. mcp__supabase__generate_typescript_types 실행 → lib/database.types.ts 덮어쓰기",
+      "verificationCriteria": "- mcp__supabase__execute_sql: SELECT match_ingredient_fuzzy('레티놀', 0.5) → 결과 반환\n- mcp__supabase__execute_sql: SELECT log_unmatched('테스트성분', null) → 오류 없음\n- lib/database.types.ts 에 두 함수 시그니처 포함",
+      "analysisResult": "Phase 3 목표: 3개 Route Handler(GET /api/products/search, POST /api/ingredients/match, POST /api/analyze)를 구현하여 Phase 1 더미 UI와 Phase 2 Supabase DB를 연결한다. 완료 시 analyze-container.tsx의 setTimeout 더미가 실제 fetch로 교체되고 Playwright MCP 통합 테스트로 검증된다.\n\n공통 사항:\n- 검증: Zod 도입 (pnpm add zod)\n- 에러 포맷: { \"error\": { \"code\": \"...\", \"message\": \"...\" } }\n- 기존 자산: lib/supabase/server.ts(anon 클라이언트), lib/database.types.ts, types/analyze.ts(SlotData/ConflictResult/SynergyResult/AnalyzeResult)\n- 선행 조치: .env.local에 SUPABASE_SERVICE_ROLE_KEY 추가 필요 (NEXT_PUBLIC_ 접두사 금지)",
+      "summary": "마이그레이션 add_ingredient_match_rpcs 적용 완료. match_ingredient_fuzzy(ingredients + ingredient_aliases UNION, STABLE, LIMIT 1)와 log_unmatched(ON CONFLICT atomic upsert) 두 RPC 함수를 Supabase에 등록하고 동작 검증 완료. lib/database.types.ts에 두 함수 시그니처(Args, Returns) 포함하여 TypeScript 타입 동기화 완료.",
+      "completedAt": "2026-04-20T13:40:16.112Z"
+    },
+    {
+      "id": "be908d02-8cdb-4921-90c8-aaa399c31ebb",
+      "name": "제품 검색 API 구현 (GET /api/products/search)",
+      "description": "pg_trgm GIN 인덱스를 활용한 ilike OR 쿼리로 제품명/브랜드 검색 엔드포인트를 구현한다. 공용 에러 헬퍼(lib/api/errors.ts), Zod 기반 검증(lib/api/validation.ts), 응답 DTO(types/api.ts)를 함께 구축한다.\n\n엔드포인트: GET /api/products/search?q={query}\n응답: { items: Array<{ id, name, brand, category, image_url }> } 최대 10건, oliveyoung_rank 오름차순",
+      "notes": "lib/supabase/server.ts의 createClient()는 Route Handler에서 직접 사용. 브라우저 클라이언트(lib/supabase/client.ts) 사용 금지.",
+      "status": "completed",
+      "dependencies": [],
+      "createdAt": "2026-04-20T13:18:10.210Z",
+      "updatedAt": "2026-04-20T13:50:47.974Z",
+      "relatedFiles": [
+        {
+          "path": "app/api/products/search/route.ts",
+          "type": "CREATE",
+          "description": "GET 핸들러"
+        },
+        {
+          "path": "lib/api/errors.ts",
+          "type": "CREATE",
+          "description": "공용 에러 응답 헬퍼"
+        },
+        {
+          "path": "lib/api/validation.ts",
+          "type": "CREATE",
+          "description": "Zod 스키마 모음"
+        },
+        {
+          "path": "types/api.ts",
+          "type": "CREATE",
+          "description": "요청/응답 DTO"
+        },
+        {
+          "path": "lib/supabase/server.ts",
+          "type": "REFERENCE",
+          "description": "createClient() 사용 패턴"
+        },
+        {
+          "path": "lib/database.types.ts",
+          "type": "REFERENCE",
+          "description": "products Row 타입"
+        }
+      ],
+      "implementationGuide": "1. pnpm add zod\n2. lib/api/errors.ts:\n```ts\nexport type ApiErrorCode = 'INVALID_QUERY'|'INVALID_BODY'|'PRODUCT_NOT_FOUND'|'EMPTY_SLOT'|'DB_ERROR'|'INTERNAL';\nexport function jsonError(status: number, code: ApiErrorCode, message: string) {\n  return Response.json({ error: { code, message } }, { status });\n}\n```\n3. types/api.ts: ProductSearchItem, ProductSearchResponse 정의\n4. lib/api/validation.ts: searchQuerySchema = z.object({ q: z.string().min(1).max(100).refine(s => !/[\\u0000-\\u001F]/.test(s)) })\n5. app/api/products/search/route.ts:\n```ts\nexport async function GET(req: NextRequest) {\n  const parsed = searchQuerySchema.safeParse({ q: req.nextUrl.searchParams.get('q') });\n  if (!parsed.success) return jsonError(400, 'INVALID_QUERY', ...);\n  const safe = parsed.data.q.replace(/[%_,()]/g, ' ').trim();\n  const supabase = await createClient();\n  const { data, error } = await supabase.from('products')\n    .select('id,name,brand,category,image_url')\n    .or(`name.ilike.%${safe}%,brand.ilike.%${safe}%`)\n    .order('oliveyoung_rank', { ascending: true, nullsFirst: false })\n    .limit(10);\n  if (error) return jsonError(500, 'DB_ERROR', 'DB 오류');\n  return Response.json({ items: data });\n}\n```",
+      "verificationCriteria": "- GET /api/products/search?q=토너 → 200, { items: [...] }\n- GET /api/products/search?q= → 400 INVALID_QUERY\n- GET /api/products/search?q=존재하지않는xyz → 200, items=[]\n- q에 %/( 포함해도 500 없음\n- pnpm build 타입 오류 없음",
+      "analysisResult": "Phase 3 목표: 3개 Route Handler(GET /api/products/search, POST /api/ingredients/match, POST /api/analyze)를 구현하여 Phase 1 더미 UI와 Phase 2 Supabase DB를 연결한다. 완료 시 analyze-container.tsx의 setTimeout 더미가 실제 fetch로 교체되고 Playwright MCP 통합 테스트로 검증된다.\n\n공통 사항:\n- 검증: Zod 도입 (pnpm add zod)\n- 에러 포맷: { \"error\": { \"code\": \"...\", \"message\": \"...\" } }\n- 기존 자산: lib/supabase/server.ts(anon 클라이언트), lib/database.types.ts, types/analyze.ts(SlotData/ConflictResult/SynergyResult/AnalyzeResult)\n- 선행 조치: .env.local에 SUPABASE_SERVICE_ROLE_KEY 추가 필요 (NEXT_PUBLIC_ 접두사 금지)",
+      "summary": "GET /api/products/search Route Handler 구현 완료. zod 4.x 설치 및 API 에러 코드 타입(lib/api/errors.ts), 제품 검색 응답 타입(types/api.ts), 검색 쿼리 유효성 검사 스키마(lib/api/validation.ts), Route Handler(app/api/products/search/route.ts) 4개 파일 신규 생성. zod 4.x에서 error.errors 대신 error.issues로 변경된 API를 올바르게 적용. pnpm build 타입 오류 0개, 빌드 성공. Playwright 4개 테스트 케이스(정상 검색 200+items, 빈 쿼리 400 INVALID_QUERY, 존재하지 않는 검색어 200+빈 배열, 특수문자 200 정상) 모두 통과.",
+      "completedAt": "2026-04-20T13:50:47.973Z"
+    },
+    {
+      "id": "acd2c4ac-c1bf-431c-8430-ee222c520d81",
+      "name": "성분 매칭 API 구현 (POST /api/ingredients/match)",
+      "description": "정규화→exact→alias→pg_trgm fuzzy(≥0.9) 4단계 매칭 엔진을 lib/analyze/match.ts에 구축하고 unmatched_log upsert를 service_role 클라이언트로 처리한다. Task 013(충돌 분석)과 매칭 엔진을 공유한다.\n\n엔드포인트: POST /api/ingredients/match\n요청: { ingredients: string[], product_id?: string }\n응답: { matched: MatchedItem[], unmatched: string[] }",
+      "notes": "adminSupabase는 lib/supabase/admin.ts에서만 export. route.ts 외부에서 import 시 server-only가 클라이언트 번들 혼입을 차단. .env.local에 SUPABASE_SERVICE_ROLE_KEY가 없으면 500 발생 → 사전 확인 필수.",
+      "status": "completed",
+      "dependencies": [
+        {
+          "taskId": "d061eb3e-1d19-4992-8528-a2755f019ddb"
+        },
+        {
+          "taskId": "be908d02-8cdb-4921-90c8-aaa399c31ebb"
+        }
+      ],
+      "createdAt": "2026-04-20T13:18:10.210Z",
+      "updatedAt": "2026-04-20T13:59:07.627Z",
+      "relatedFiles": [
+        {
+          "path": "app/api/ingredients/match/route.ts",
+          "type": "CREATE",
+          "description": "POST 핸들러 (얇은 어댑터)"
+        },
+        {
+          "path": "lib/supabase/admin.ts",
+          "type": "CREATE",
+          "description": "service_role 클라이언트 (server-only)"
+        },
+        {
+          "path": "lib/ingredients/normalize.ts",
+          "type": "CREATE",
+          "description": "괄호 농도 제거 + 공백 정규화"
+        },
+        {
+          "path": "lib/analyze/match.ts",
+          "type": "CREATE",
+          "description": "매칭 엔진 단일 소스 (Task 013 공유)"
+        },
+        {
+          "path": "types/api.ts",
+          "type": "TO_MODIFY",
+          "description": "MatchRequest, MatchedItem, MatchResponse 추가"
+        },
+        {
+          "path": "lib/api/validation.ts",
+          "type": "TO_MODIFY",
+          "description": "matchBodySchema 추가"
+        },
+        {
+          "path": "lib/database.types.ts",
+          "type": "REFERENCE",
+          "description": "ingredient_aliases, unmatched_log Row 타입"
+        }
+      ],
+      "implementationGuide": "1. lib/supabase/admin.ts:\n```ts\nimport 'server-only';\nimport { createClient } from '@supabase/supabase-js';\nexport const adminSupabase = createClient(\n  process.env.NEXT_PUBLIC_SUPABASE_URL!,\n  process.env.SUPABASE_SERVICE_ROLE_KEY!\n);\n```\n2. lib/ingredients/normalize.ts:\n```ts\nexport function normalizeName(raw: string): string {\n  return raw.replace(/[\\(\\[\\{][\\d.\\s]*%?\\s*[\\)\\]\\}]/g, '').replace(/\\s+/g, ' ').trim();\n}\n```\n3. lib/analyze/match.ts - matchIngredients(rawNames, productId?):\n  - Step1: supabase.from('ingredients').select('id,name').in('name', normalizedNames)\n  - Step2: 잔여 → ingredient_aliases select+join .in('alias', remaining)\n  - Step3: 잔여 각 term → supabase.rpc('match_ingredient_fuzzy', {term, threshold:0.9})\n  - Step4: 최종 미매칭 → adminSupabase.rpc('log_unmatched', {p_raw_name, p_product_id: productId??null})\n  - 반환: { matched: MatchedItem[], unmatched: string[] }\n4. lib/api/validation.ts에 matchBodySchema 추가:\n  z.object({ ingredients: z.array(z.string().min(1).max(100)).min(1).max(200), product_id: z.string().uuid().optional() })\n5. app/api/ingredients/match/route.ts: matchIngredients 호출 후 DTO 매핑",
+      "verificationCriteria": "- POST {ingredients:['나이아신아마이드(2%)','알수없는xyz']} → matched 1건(exact) + unmatched 1건\n- 동일 요청 재시행 → SELECT occurrence_count FROM unmatched_log WHERE raw_name='알수없는xyz' = 2\n- 빈 배열 → 400 INVALID_BODY\n- service_role 키 부재 시 500 DB_ERROR\n- pnpm build 타입 오류 없음",
+      "analysisResult": "Phase 3 목표: 3개 Route Handler(GET /api/products/search, POST /api/ingredients/match, POST /api/analyze)를 구현하여 Phase 1 더미 UI와 Phase 2 Supabase DB를 연결한다. 완료 시 analyze-container.tsx의 setTimeout 더미가 실제 fetch로 교체되고 Playwright MCP 통합 테스트로 검증된다.\n\n공통 사항:\n- 검증: Zod 도입 (pnpm add zod)\n- 에러 포맷: { \"error\": { \"code\": \"...\", \"message\": \"...\" } }\n- 기존 자산: lib/supabase/server.ts(anon 클라이언트), lib/database.types.ts, types/analyze.ts(SlotData/ConflictResult/SynergyResult/AnalyzeResult)\n- 선행 조치: .env.local에 SUPABASE_SERVICE_ROLE_KEY 추가 필요 (NEXT_PUBLIC_ 접두사 금지)",
+      "summary": "성분 매칭 API(POST /api/ingredients/match) 구현 완료. 6개 파일 생성/수정: lib/supabase/admin.ts(service_role 클라이언트), lib/ingredients/normalize.ts(농도 표기 제거 정규화), lib/analyze/match.ts(4단계 매칭 엔진), types/api.ts(MatchedItem/MatchRequest/MatchResponse 추가), lib/api/validation.ts(matchBodySchema 추가), app/api/ingredients/match/route.ts(Route Handler). pnpm build 타입 오류 0개. Playwright 테스트: 나이아신아마이드(2%) exact match 확인, 알수없는성분xyz unmatched 처리 확인, 빈 배열 400 INVALID_BODY 확인. Supabase MCP로 2회 호출 후 occurrence_count=2 atomic upsert 정상 작동 확인.",
+      "completedAt": "2026-04-20T13:59:07.626Z"
+    },
+    {
+      "id": "b28c01ca-2b62-49f2-a9a9-868e68ba3e5a",
+      "name": "충돌 분석 API 구현 + UI 연결 (POST /api/analyze)",
+      "description": "슬롯별 ingredient 확보(제품/수동) → 그룹 확장 → conflict_rules 양방향 조회 → snake_case→camelCase 변환 흐름을 구현한다. 완료 시 analyze-container.tsx의 setTimeout(1500) 더미를 실제 fetch 호출로 교체한다.\n\n엔드포인트: POST /api/analyze\n요청: { slotA: SlotData, slotB: SlotData }\n응답: AnalyzeResult = { conflicts: ConflictResult[], synergies: SynergyResult[] }",
+      "notes": "conflict_rules의 ingredient_a/ingredient_b는 성분명 또는 그룹명 혼재(TEXT). csvA/csvB를 .or() 인자로 사용 시 특수문자 이스케이프 필요. synergy는 severity가 null이므로 toConflict 변환 시 타입 가드 필수.",
+      "status": "completed",
+      "dependencies": [
+        {
+          "taskId": "acd2c4ac-c1bf-431c-8430-ee222c520d81"
+        }
+      ],
+      "createdAt": "2026-04-20T13:18:10.210Z",
+      "updatedAt": "2026-04-20T14:13:21.668Z",
+      "relatedFiles": [
+        {
+          "path": "app/api/analyze/route.ts",
+          "type": "CREATE",
+          "description": "POST 핸들러"
+        },
+        {
+          "path": "lib/analyze/conflict.ts",
+          "type": "CREATE",
+          "description": "충돌 분석 엔진"
+        },
+        {
+          "path": "lib/analyze/match.ts",
+          "type": "DEPENDENCY",
+          "description": "매칭 엔진 재사용"
+        },
+        {
+          "path": "types/api.ts",
+          "type": "TO_MODIFY",
+          "description": "AnalyzeRequest, AnalyzeResponse 추가"
+        },
+        {
+          "path": "lib/api/validation.ts",
+          "type": "TO_MODIFY",
+          "description": "analyzeBodySchema 추가"
+        },
+        {
+          "path": "components/analyze/analyze-container.tsx",
+          "type": "TO_MODIFY",
+          "description": "handleAnalyze: setTimeout 더미 → fetch 교체 (L128-134)"
+        },
+        {
+          "path": "types/analyze.ts",
+          "type": "REFERENCE",
+          "description": "SlotData, ConflictResult, SynergyResult, AnalyzeResult 재사용"
+        }
+      ],
+      "implementationGuide": "1. Zod discriminated union:\n```ts\nconst slotSchema = z.discriminatedUnion('type', [\n  z.object({ type: z.literal('product'), productId: z.string().uuid(), productName: z.string().optional(), brand: z.string().optional() }),\n  z.object({ type: z.literal('manual'), productName: z.string().optional(), ingredients: z.array(z.string().min(1)).min(1) }),\n]);\nconst analyzeBodySchema = z.object({ slotA: slotSchema, slotB: slotSchema });\n```\n2. resolveSlotIngredients(slot):\n  - product: product_ingredients.select('ingredient_id,ingredients(name)').eq('product_id', slot.productId) → 0건이면 404\n  - manual: matchIngredients(slot.ingredients) → matched만 취합, 전부 미매칭이면 422\n3. lib/analyze/conflict.ts - analyzeConflicts(namesA, namesB):\n  - ingredient_group_members로 그룹명 조회\n  - termsA = namesA ∪ groupNamesA, termsB 동일\n  - 양방향 쿼리: .or(`and(ingredient_a.in.(${csvA}),ingredient_b.in.(${csvB})),and(ingredient_a.in.(${csvB}),ingredient_b.in.(${csvA}))`)\n  - avoid/caution → conflicts, synergy → synergies\n4. snake_case→camelCase 변환 후 200 응답\n5. analyze-container.tsx:128-134 교체:\n```ts\nconst handleAnalyze = useCallback(async () => {\n  dispatch({ type: 'START_ANALYZE' });\n  const res = await fetch('/api/analyze', { method: 'POST', headers: {'content-type':'application/json'}, body: JSON.stringify({ slotA: state.slotA, slotB: state.slotB }) });\n  if (!res.ok) { dispatch({ type: 'RESET' }); return; }\n  const payload = await res.json();\n  dispatch({ type: 'SET_RESULT', payload });\n}, [state.slotA, state.slotB]);\n```",
+      "verificationCriteria": "- product×product 시드 케이스: conflicts.length > 0\n- a_type='group' 규칙이 ingredient_group_members 경유 탐지\n- canonical 순서와 무관하게 양방향 탐지\n- 빈 manual 슬롯 → 422 EMPTY_SLOT\n- 없는 productId → 404 PRODUCT_NOT_FOUND\n- pnpm dev 후 브라우저에서 두 제품 선택 → 분석 → ResultPanel에 실 데이터 렌더\n- pnpm build 타입 오류 없음",
+      "analysisResult": "Phase 3 목표: 3개 Route Handler(GET /api/products/search, POST /api/ingredients/match, POST /api/analyze)를 구현하여 Phase 1 더미 UI와 Phase 2 Supabase DB를 연결한다. 완료 시 analyze-container.tsx의 setTimeout 더미가 실제 fetch로 교체되고 Playwright MCP 통합 테스트로 검증된다.\n\n공통 사항:\n- 검증: Zod 도입 (pnpm add zod)\n- 에러 포맷: { \"error\": { \"code\": \"...\", \"message\": \"...\" } }\n- 기존 자산: lib/supabase/server.ts(anon 클라이언트), lib/database.types.ts, types/analyze.ts(SlotData/ConflictResult/SynergyResult/AnalyzeResult)\n- 선행 조치: .env.local에 SUPABASE_SERVICE_ROLE_KEY 추가 필요 (NEXT_PUBLIC_ 접두사 금지)",
+      "summary": "충돌 분석 API 및 UI 연결 완전 구현. lib/analyze/conflict.ts (그룹 확장 + 양방향 쿼리), app/api/analyze/route.ts (POST Handler), types/api.ts (AnalyzeRequest/AnalyzeResponse 추가), lib/api/validation.ts (analyzeBodySchema 추가), analyze-container.tsx (handleAnalyze 실제 fetch 교체 + DUMMY_RESULT 삭제), product-search.tsx (더미 id를 실제 DB UUID로 교체) 총 6개 파일 구현. pnpm type-check 오류 0개, pnpm build 성공, API 테스트(product×product, manual×product, 422 EMPTY_SLOT, 404 PRODUCT_NOT_FOUND) 전체 통과, Playwright E2E 브라우저 검증에서 ResultPanel 실 데이터 렌더 확인 및 콘솔 에러 0개 달성.",
+      "completedAt": "2026-04-20T14:13:21.666Z"
+    },
+    {
+      "id": "03c29075-c0c2-4c8a-a199-58a49c5c88b5",
+      "name": "API 통합 테스트 (Playwright MCP)",
+      "description": "3개 엔드포인트에 대해 10개 시나리오를 Playwright MCP로 검증하고, unmatched_log 증가분을 SQL로 확인하며, 응답 시간 p50/p95를 계측한다. UI 수동 검증(슬롯 선택→분석→결과 렌더)도 포함한다.",
+      "notes": "pnpm dev가 이미 기동 중이면 재시작 불필요. Playwright MCP browser_evaluate 사용 시 fetch는 same-origin이므로 별도 CORS 설정 불필요.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "be908d02-8cdb-4921-90c8-aaa399c31ebb"
+        },
+        {
+          "taskId": "acd2c4ac-c1bf-431c-8430-ee222c520d81"
+        },
+        {
+          "taskId": "b28c01ca-2b62-49f2-a9a9-868e68ba3e5a"
+        }
+      ],
+      "createdAt": "2026-04-20T13:18:10.210Z",
+      "updatedAt": "2026-04-20T13:18:10.210Z",
+      "relatedFiles": [
+        {
+          "path": "app/api/products/search/route.ts",
+          "type": "REFERENCE",
+          "description": "검색 API"
+        },
+        {
+          "path": "app/api/ingredients/match/route.ts",
+          "type": "REFERENCE",
+          "description": "매칭 API"
+        },
+        {
+          "path": "app/api/analyze/route.ts",
+          "type": "REFERENCE",
+          "description": "분석 API"
+        },
+        {
+          "path": "components/analyze/analyze-container.tsx",
+          "type": "REFERENCE",
+          "description": "UI E2E 검증 대상"
+        }
+      ],
+      "implementationGuide": "1. pnpm dev 기동 확인 (Monitor 또는 Bash background)\n2. browser_navigate('http://localhost:3000') 후 browser_evaluate로 fetch 호출\n3. 10개 시나리오 순차 실행:\n  1) GET /products/search?q=토너 → 200, items≥0\n  2) GET /products/search?q= → 400 INVALID_QUERY\n  3) GET /products/search?q=존재x → 200, items=[]\n  4) POST /ingredients/match 정상 → matched+unmatched 합=입력수\n  5) 동일 요청 2회 → unmatched_log.occurrence_count 증가 (execute_sql 검증)\n  6) POST /analyze product×product 충돌 → conflicts.length>0\n  7) POST /analyze synergy 전용 → conflicts=[], synergies>0\n  8) POST /analyze 양방향 역순 → 탐지 성공\n  9) POST /analyze 빈 manual 슬롯 → 422 EMPTY_SLOT\n  10) POST /analyze 없는 productId → 404 PRODUCT_NOT_FOUND\n4. 응답시간 계측: performance.now() warm-up 1회 후 5회 평균\n5. UI 수동: browser_navigate → 제품 두 개 선택 → 분석 → browser_snapshot으로 결과 확인",
+      "verificationCriteria": "- 10개 시나리오 모두 기대 status/body 충족\n- unmatched_log 증가 SQL 검증 통과\n- UI: 두 제품 선택→분석→ResultPanel 실 데이터 렌더 확인\n- p50 < 200ms, p95 < 500ms (시드 규모)\n- console.error / 5xx 없음 (의도된 4xx 제외)\n- pnpm build 최종 통과",
+      "analysisResult": "Phase 3 목표: 3개 Route Handler(GET /api/products/search, POST /api/ingredients/match, POST /api/analyze)를 구현하여 Phase 1 더미 UI와 Phase 2 Supabase DB를 연결한다. 완료 시 analyze-container.tsx의 setTimeout 더미가 실제 fetch로 교체되고 Playwright MCP 통합 테스트로 검증된다.\n\n공통 사항:\n- 검증: Zod 도입 (pnpm add zod)\n- 에러 포맷: { \"error\": { \"code\": \"...\", \"message\": \"...\" } }\n- 기존 자산: lib/supabase/server.ts(anon 클라이언트), lib/database.types.ts, types/analyze.ts(SlotData/ConflictResult/SynergyResult/AnalyzeResult)\n- 선행 조치: .env.local에 SUPABASE_SERVICE_ROLE_KEY 추가 필요 (NEXT_PUBLIC_ 접두사 금지)"
     }
   ]
 }
