@@ -25,40 +25,6 @@ const initialState: AnalyzeState = {
 };
 
 // ---------------------------------------------------------------------------
-// 더미 분석 결과 (Phase 1 목업용 — API 연동 전 하드코딩)
-// ---------------------------------------------------------------------------
-const DUMMY_RESULT: AnalyzeResult = {
-  conflicts: [
-    {
-      ingredientA: "레티놀",
-      ingredientB: "비타민C",
-      conflictType: "avoid",
-      severity: "high",
-      reasonKo:
-        "레티놀과 비타민C(아스코르브산)는 산성 환경에서 레티놀 분해를 촉진합니다.",
-      recommend: "아침(비타민C) / 저녁(레티놀)으로 분리 사용 권장",
-    },
-    {
-      ingredientA: "레티놀 계열",
-      ingredientB: "AHA 계열",
-      conflictType: "avoid",
-      severity: "high",
-      reasonKo:
-        "AHA의 낮은 pH가 레티놀을 불안정하게 만들어 피부 자극을 유발합니다.",
-      recommend: "레티놀은 저녁, AHA는 다른 날 저녁 사용",
-    },
-  ],
-  synergies: [
-    {
-      ingredientA: "히알루론산",
-      ingredientB: "세라마이드",
-      reasonKo:
-        "수분 공급(히알루론산)과 장벽 강화(세라마이드)의 시너지 보습 효과",
-    },
-  ],
-};
-
-// ---------------------------------------------------------------------------
 // Reducer
 // ---------------------------------------------------------------------------
 function analyzeReducer(
@@ -125,13 +91,28 @@ export default function AnalyzeContainer() {
   /** 직접 입력 다이얼로그 대상 슬롯 */
   const [dialogTargetSlot, setDialogTargetSlot] = useState<"A" | "B">("A");
 
-  /** 분석 시작: 1.5초 후 더미 결과로 전환 */
-  const handleAnalyze = useCallback(() => {
+  /** 분석 시작: /api/analyze API 호출 */
+  const handleAnalyze = useCallback(async () => {
+    if (!state.slotA || !state.slotB) return;
     dispatch({ type: "START_ANALYZE" });
-    setTimeout(() => {
-      dispatch({ type: "SET_RESULT", payload: DUMMY_RESULT });
-    }, 1500);
-  }, []);
+    try {
+      const res = await fetch("/api/analyze", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ slotA: state.slotA, slotB: state.slotB }),
+      });
+      if (!res.ok) {
+        console.error("[handleAnalyze] API error:", res.status);
+        dispatch({ type: "RESET" });
+        return;
+      }
+      const payload: AnalyzeResult = await res.json();
+      dispatch({ type: "SET_RESULT", payload });
+    } catch (err) {
+      console.error("[handleAnalyze] fetch error:", err);
+      dispatch({ type: "RESET" });
+    }
+  }, [state.slotA, state.slotB]);
 
   /** 슬롯 A 선택 해제 → select-a 상태로 복귀 */
   const handleClearSlotA = useCallback(() => {
