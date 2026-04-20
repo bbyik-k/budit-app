@@ -299,6 +299,18 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      log_unmatched: {
+        Args: { p_product_id: string; p_raw_name: string };
+        Returns: undefined;
+      };
+      match_ingredient_fuzzy: {
+        Args: { term: string; threshold: number };
+        Returns: {
+          ingredient_id: string;
+          name: string;
+          similarity: number;
+        }[];
+      };
       show_limit: { Args: never; Returns: number };
       show_trgm: { Args: { "": string }; Returns: string[] };
     };
