@@ -63,7 +63,7 @@
 
 ---
 
-### Phase 1: 목업 UI (인터랙티브 프로토타입)
+### Phase 1: 목업 UI (인터랙티브 프로토타입) ✅
 
 > **목적**: API/DB 연결 없이 하드코딩된 더미 데이터로 실제처럼 동작하는 인터랙티브 목업 페이지 구현.
 >
@@ -84,37 +84,39 @@
   - components/analyze/step-indicator.tsx 슬롯 A/B 단계 표시
   - select-a / select-b / ready / analyzing / result 상태 전환 구조 완성
 
-- **Task 005: 검색 UI 및 슬롯 선택**
-  - components/analyze/product-search.tsx shadcn/ui Command 기반 검색 UI
-  - 하드코딩된 더미 제품 목록으로 검색 드롭다운 동작 구현
-  - select-a 상태: 슬롯 A 검색창 활성화
-  - select-b 상태: 슬롯 A 선택 완료 표시 + 슬롯 B 검색창 활성화
-  - ready 상태: 양쪽 슬롯 선택 완료 + "성분 충돌 분석" 버튼 활성화
+- **Task 005: 검색 UI 및 슬롯 선택** ✅ - 완료
+  - ✅ components/analyze/product-search.tsx shadcn/ui Command 기반 검색 UI
+  - ✅ 하드코딩된 더미 제품 목록으로 검색 드롭다운 동작 구현
+  - ✅ select-a 상태: 슬롯 A 검색창 활성화
+  - ✅ select-b 상태: 슬롯 A 선택 완료 표시 + 슬롯 B 검색창 활성화
+  - ✅ ready 상태: 양쪽 슬롯 선택 완료 + "성분 충돌 분석" 버튼 활성화
 
-- **Task 006: 결과 화면**
-  - components/analyze/result-panel.tsx 분석 결과 패널
-  - components/analyze/conflict-card.tsx 충돌 카드 (severity별 색상)
-  - result-conflict 상태: 충돌 카드 목록 + 루틴 분리 권장사항 표시
-  - result-safe 상태: 초록 안전 배지 + 시너지 성분 하이라이트
-  - "돌아가기" 버튼 → select-a 초기화, "성분 충돌 분석" 버튼 클릭 시 로딩 후 결과 전환 (setTimeout 1.5초)
+- **Task 006: 결과 화면** ✅ - 완료
+  - ✅ components/analyze/result-panel.tsx 분석 결과 패널
+  - ✅ components/analyze/conflict-card.tsx 충돌 카드 (severity별 색상)
+  - ✅ result-conflict 상태: 충돌 카드 목록 + 루틴 분리 권장사항 표시
+  - ✅ result-safe 상태: 초록 안전 배지 + 시너지 성분 하이라이트
+  - ✅ "돌아가기" 버튼 → select-a 초기화, "성분 충돌 분석" 버튼 클릭 시 로딩 후 결과 전환 (setTimeout 1.5초)
 
-- **Task 007: 성분 직접 입력 다이얼로그 목업**
-  - components/analyze/manual-input-dialog.tsx 구현
-  - shadcn/ui Dialog 기반 모달 UI
-  - 쉼표 구분 성분 텍스트 입력 textarea
-  - "확인" 클릭 시 더미 매칭 결과 미리보기 (성공/실패 성분 구분 표시)
-  - 슬롯에 manual 타입으로 적용하면 ready 상태로 전환
+- **Task 007: 성분 직접 입력 다이얼로그 목업** ✅ - 완료
+  - ✅ components/analyze/manual-input-dialog.tsx 구현
+  - ✅ shadcn/ui Dialog 기반 모달 UI
+  - ✅ 쉼표 구분 성분 텍스트 입력 textarea
+  - ✅ "확인" 클릭 시 더미 매칭 결과 미리보기 (성공/실패 성분 구분 표시)
+  - ✅ 슬롯에 manual 타입으로 적용하면 ready 상태로 전환
 
 ---
 
 ### Phase 2: DB 스키마 + 시드 인프라
 
-- **Task 007: Supabase 데이터베이스 스키마 생성** - 우선순위
-  - pg_trgm 확장 활성화
-  - 8개 테이블 생성 (products, ingredients, ingredient_groups, ingredient_group_members, product_ingredients, conflict_rules, ingredient_aliases, unmatched_log)
-  - 외래 키 제약 조건 및 UNIQUE 인덱스 설정
-  - GIN 트라이그램 인덱스 적용 (products.name, products.brand, ingredients.name)
-  - Supabase MCP를 활용한 마이그레이션 실행
+- **Task 007: Supabase 데이터베이스 스키마 생성** ✅ - 완료
+  - ✅ pg_trgm 확장 활성화
+  - ✅ 8개 테이블 생성 (products, ingredients, ingredient_groups, ingredient_group_members, product_ingredients, conflict_rules, ingredient_aliases, unmatched_log)
+  - ✅ 외래 키 제약 조건 및 UNIQUE 인덱스 설정
+  - ✅ GIN 트라이그램 인덱스 적용 (products.name, products.brand, ingredients.name)
+  - ✅ Supabase MCP를 활용한 마이그레이션 실행
+  - ✅ RLS 정책 적용 (8개 테이블 anon 읽기 허용)
+  - ✅ TypeScript 타입 생성 (lib/database.types.ts)
 
 - **Task 008: TypeScript 타입 정의 및 인터페이스 설계**
   - Supabase 테이블 기반 TypeScript 타입 자동 생성 (supabase gen types)
@@ -274,13 +276,13 @@
 
 ## 진행 상황 요약
 
-| Phase    | 상태 | Task 수 | 완료  |
-| -------- | ---- | ------- | ----- |
-| Phase 0  | ✅   | 2       | 2     |
-| Phase 1  | 대기 | 4       | 0     |
-| Phase 2  | 대기 | 4       | 0     |
-| Phase 3  | 대기 | 4       | 0     |
-| Phase 4  | 대기 | 4       | 0     |
-| Phase 5  | 대기 | 3       | 0     |
-| Phase 6  | 대기 | 4       | 0     |
-| **합계** |      | **25**  | **2** |
+| Phase    | 상태    | Task 수 | 완료  |
+| -------- | ------- | ------- | ----- |
+| Phase 0  | ✅      | 2       | 2     |
+| Phase 1  | ✅      | 5       | 5     |
+| Phase 2  | 진행 중 | 4       | 1     |
+| Phase 3  | 대기    | 4       | 0     |
+| Phase 4  | 대기    | 4       | 0     |
+| Phase 5  | 대기    | 3       | 0     |
+| Phase 6  | 대기    | 4       | 0     |
+| **합계** |         | **26**  | **8** |
