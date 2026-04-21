@@ -1,19 +1,19 @@
 alias,ingredient_name,source
-비타민C,아스코르브산,manual
-Vitamin C,아스코르브산,manual
-VC,아스코르브산,manual
-L-아스코르브산,아스코르브산,manual
-순수 비타민C,아스코르브산,manual
+비타민C,아스코빅애씨드,manual
+Vitamin C,아스코빅애씨드,manual
+VC,아스코빅애씨드,manual
+L-아스코르브산,아스코빅애씨드,manual
+순수 비타민C,아스코빅애씨드,manual
 비타민A,레티놀,manual
 Retinol,레티놀,manual
 레티노이드,레티놀,manual
-글리콜릭 애시드,글리콜산,manual
-Glycolic Acid,글리콜산,manual
-락틱 애시드,젖산,manual
-Lactic Acid,젖산,manual
-살리실산(BHA),살리실산,manual
-BHA,살리실산,manual
-Salicylic Acid,살리실산,manual
+글리콜릭 애시드,글리콜릭애씨드,manual
+Glycolic Acid,글리콜릭애씨드,manual
+락틱 애시드,락틱애씨드,manual
+Lactic Acid,락틱애씨드,manual
+살리실산(BHA),살리실릭애씨드,manual
+BHA,살리실릭애씨드,manual
+Salicylic Acid,살리실릭애씨드,manual
 히알루론산나트륨,히알루론산,manual
 HA,히알루론산,manual
 Hyaluronic Acid,히알루론산,manual
@@ -42,3 +42,10 @@ EGF(표피성장인자),EGF,manual
 구연산,시트릭애씨드,manual
 Citric Acid,시트릭애씨드,manual
 시트릭 애씨드,시트릭애씨드,manual
+글리콜산,글리콜릭애씨드,manual
+젖산,락틱애씨드,manual
+살리실산,살리실릭애씨드,manual
+만델산,만델릭애씨드,manual
+사과산,말릭애씨드,manual
+주석산,타타르산,manual
+아스코르브산,아스코빅애씨드,manual
