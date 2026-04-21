@@ -248,7 +248,10 @@ async function seedIngredientGroupMembers(
     // 중복 방지: 기존에 없는 조합만 삽입
     const { error } = await supabase
       .from("ingredient_group_members")
-      .upsert(records, { ignoreDuplicates: true });
+      .upsert(records, {
+        onConflict: "group_id,ingredient_id",
+        ignoreDuplicates: true,
+      });
 
     if (error) {
       console.error("  ❌ 오류:", error.message);
