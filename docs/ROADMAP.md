@@ -107,7 +107,7 @@
 
 ---
 
-### Phase 2: DB 스키마 + 시드 인프라
+### Phase 2: DB 스키마 + 시드 인프라 ✅
 
 - **Task 007: Supabase 데이터베이스 스키마 생성** ✅ - 완료
   - ✅ pg_trgm 확장 활성화
@@ -118,118 +118,108 @@
   - ✅ RLS 정책 적용 (8개 테이블 anon 읽기 허용)
   - ✅ TypeScript 타입 생성 (lib/database.types.ts)
 
-- **Task 008: TypeScript 타입 정의 및 인터페이스 설계**
-  - Supabase 테이블 기반 TypeScript 타입 자동 생성 (supabase gen types)
-  - API 요청/응답 타입 정의 (AnalyzeRequest, AnalyzeResponse 등)
-  - 컴포넌트 Props 타입 정의 (SlotState, AnalyzeStep 등)
-  - useReducer 상태 및 액션 타입 정의 (AnalyzeState, AnalyzeAction)
+- **Task 008: TypeScript 타입 정의 및 인터페이스 설계** ✅ - 완료
+  - ✅ Supabase 테이블 기반 TypeScript 타입 자동 생성 (lib/database.types.ts)
+  - ✅ API 요청/응답 타입 정의 (AnalyzeRequest, AnalyzeResponse 등)
+  - ✅ 컴포넌트 Props 타입 정의 (SlotState, AnalyzeStep 등)
+  - ✅ useReducer 상태 및 액션 타입 정의 (AnalyzeState, AnalyzeAction)
 
-- **Task 009: CSV 시드 데이터 준비**
-  - data/csv/ 디렉토리에 7종 CSV 파일 구성
-  - ingredients.csv: KCIA 기준 성분 DB (21,805개 성분)
-  - ingredient_groups.csv: The Ordinary 충돌 차트 기반 10-15개 핵심 그룹
-  - ingredient_group_members.csv: 성분-그룹 매핑 데이터
-  - ingredient_aliases.csv: 비표준 표기 별칭 데이터
-  - products.csv: 올리브영 상위 120개 제품 (4개 카테고리 x 30개)
-  - product_ingredients.csv: 제품별 전성분 매핑 데이터
-  - conflict_rules.csv: 그룹 간 충돌/시너지 규칙 데이터
+- **Task 009: CSV 시드 데이터 준비** ✅ - 완료
+  - ✅ data/csv/ 디렉토리에 7종 CSV 파일 구성
+  - ✅ ingredients.csv: KCIA 기준 성분 DB (21,805개 성분)
+  - ✅ ingredient_groups.csv: The Ordinary 충돌 차트 기반 핵심 그룹
+  - ✅ ingredient_group_members.csv: 성분-그룹 매핑 데이터
+  - ✅ ingredient_aliases.csv: 비표준 표기 별칭 데이터
+  - ✅ products.csv: 올리브영 상위 120개 제품
+  - ✅ product_ingredients.csv: 제품별 전성분 매핑 데이터
+  - ✅ conflict_rules.csv: 그룹 간 충돌/시너지 규칙 데이터
 
-- **Task 010: 시드 스크립트 개발 및 실행**
-  - scripts/seed/ 디렉토리에 TypeScript 시드 스크립트 작성
-  - FK 의존성 고려한 실행 순서 보장 (ingredients -> ingredient_groups -> group_members -> aliases -> products -> product_ingredients -> conflict_rules)
-  - CSV 파싱 및 Supabase 클라이언트를 통한 데이터 삽입
-  - 중복 데이터 처리 (upsert) 및 에러 핸들링
-  - 시드 실행 결과 검증 (테이블별 row count 확인)
+- **Task 010: 시드 스크립트 개발 및 실행** ✅ - 완료
+  - ✅ scripts/seed.ts TypeScript 시드 스크립트 작성
+  - ✅ FK 의존성 고려한 실행 순서 보장
+  - ✅ CSV 파싱 및 Supabase 클라이언트를 통한 데이터 삽입
+  - ✅ 중복 데이터 처리 (upsert) 및 에러 핸들링
+  - ✅ 시드 실행 결과 검증
 
 ---
 
-### Phase 3: API 3개 구현
+### Phase 3: API 3개 구현 ✅
 
-- **Task 011: 제품 검색 API 구현** - 우선순위
-  - GET /api/products/search?q={query} 라우트 핸들러 구현
-  - pg_trgm 기반 한글 부분 문자열 검색 쿼리 작성
-  - 상위 10개 결과 반환 (name, brand, category, image_url 포함)
-  - 빈 쿼리 및 특수문자 입력 방어 처리
-  - Zod를 활용한 쿼리 파라미터 검증
-  - Playwright MCP를 활용한 API 엔드포인트 테스트
+- **Task 011: 제품 검색 API 구현** ✅ - 완료
+  - ✅ GET /api/products/search?q={query} 라우트 핸들러 구현
+  - ✅ pg_trgm 기반 한글 부분 문자열 검색 쿼리 작성
+  - ✅ 상위 10개 결과 반환 (name, brand, category, image_url 포함)
+  - ✅ 빈 쿼리 및 특수문자 입력 방어 처리
+  - ✅ Zod를 활용한 쿼리 파라미터 검증
 
-- **Task 012: 성분 매칭 API 구현**
-  - POST /api/ingredients/match 라우트 핸들러 구현
-  - 성분 텍스트 전처리 로직 (괄호 내 농도 제거, 공백 정규화)
-  - 매칭 우선순위 구현: ingredients.name 정확 매칭 -> ingredient_aliases 매칭 -> pg_trgm 유사도(90% 이상)
-  - 매칭 실패 시 unmatched_log 테이블 기록
-  - Zod를 활용한 요청 본문 검증
-  - Playwright MCP를 활용한 매칭 정확도 테스트
+- **Task 012: 성분 매칭 API 구현** ✅ - 완료
+  - ✅ POST /api/ingredients/match 라우트 핸들러 구현
+  - ✅ 성분 텍스트 전처리 로직 (괄호 내 농도 제거, 공백 정규화)
+  - ✅ 4단계 매칭 우선순위 구현: 정확 매칭 -> aliases 매칭 -> pg_trgm 유사도(90% 이상) -> unmatched_log 기록
+  - ✅ Zod를 활용한 요청 본문 검증
 
-- **Task 013: 핵심 충돌 분석 API 구현**
-  - POST /api/analyze 라우트 핸들러 구현
-  - 슬롯 타입별 성분 ID 확보 로직 (product 타입: product_ingredients 조회 / manual 타입: /api/ingredients/match 내부 호출)
-  - 성분별 소속 그룹 확보 (ingredient_group_members 조회)
-  - 슬롯별 텀 집합 생성 (개별 성분명 합집합 소속 그룹명)
-  - conflict_rules 양방향 조회 (슬롯 A 텀 x 슬롯 B 텀)
-  - 결과 분류: avoid/caution -> conflicts 배열, synergy -> synergies 배열
-  - AnalyzeResponse 타입에 맞는 응답 구조 반환
-  - Playwright MCP를 활용한 충돌 분석 로직 통합 테스트
+- **Task 013: 핵심 충돌 분석 API 구현** ✅ - 완료
+  - ✅ POST /api/analyze 라우트 핸들러 구현
+  - ✅ 슬롯 타입별 성분 ID 확보 로직 (product/manual 타입 분기)
+  - ✅ 성분별 소속 그룹 확보 (ingredient_group_members 조회)
+  - ✅ conflict_rules 양방향 조회 (RPC 전환으로 URL 초과 버그 수정)
+  - ✅ 결과 분류: avoid/caution -> conflicts 배열, synergy -> synergies 배열
+  - ✅ UI 실제 데이터 연결
 
 - **Task 014: API 통합 테스트**
   - Playwright MCP를 사용한 전체 API 플로우 테스트
   - 제품 검색 -> 성분 매칭 -> 충돌 분석 연속 시나리오 검증
-  - 에러 핸들링 및 엣지 케이스 테스트 (존재하지 않는 제품, 빈 성분 목록, 매칭 실패 다수 발생 등)
+  - 에러 핸들링 및 엣지 케이스 테스트
   - 응답 시간 및 성능 기본 검증
 
 ---
 
-### Phase 4: UI 레이아웃 + 랜딩 + 분석 검색
+### Phase 4: UI 레이아웃 + 랜딩 + 분석 검색 ✅
 
-- **Task 015: 공통 레이아웃 및 헤더 컴포넌트** - 우선순위
-  - components/layout/header.tsx 구현 (로고 + 다크모드 토글)
-  - app/layout.tsx 루트 레이아웃 업데이트
-  - next-themes ThemeProvider 설정
-  - 로고 클릭 시 홈(/) 이동
-  - 반응형 헤더 기본 구조 (데스크탑 우선)
+- **Task 015: 공통 레이아웃 및 헤더 컴포넌트** ✅ - 완료
+  - ✅ components/layout/header.tsx 구현 (로고 + 다크모드 토글)
+  - ✅ app/layout.tsx 루트 레이아웃 업데이트
+  - ✅ next-themes ThemeProvider 설정
+  - ✅ 반응형 헤더 기본 구조
 
-- **Task 016: 랜딩 페이지 구현**
-  - app/page.tsx 랜딩 페이지 Server Component 구현
-  - components/landing/hero-section.tsx 히어로 섹션 (서비스 슬로건 + 설명 + CTA 버튼)
-  - components/landing/how-it-works.tsx 3단계 사용법 안내 섹션
-  - "지금 분석하기" CTA 버튼 -> /analyze 라우트 이동
-  - 더미 콘텐츠로 UI 완성 후 실제 카피 적용
+- **Task 016: 랜딩 페이지 구현** ✅ - 완료
+  - ✅ app/page.tsx 랜딩 페이지 구현 (단일 페이지 아키텍처)
+  - ✅ components/landing/hero-section.tsx 히어로 섹션
+  - ✅ components/landing/how-it-works.tsx 3단계 사용법 안내 섹션
+  - ✅ 실제 카피 및 브랜드 컬러 적용
 
-- **Task 017: 분석 페이지 골격 및 상태 관리**
-  - app/analyze/page.tsx 분석 페이지 라우트 생성 (Server Shell)
-  - components/analyze/analyze-container.tsx 클라이언트 컨테이너 구현
-  - useReducer 기반 상태 관리 구현 (select-a -> select-b -> ready -> analyzing -> result)
-  - AnalyzeState 및 AnalyzeAction 타입 적용
-  - 단계별 UI 분기 렌더링 로직
+- **Task 017: 분석 페이지 골격 및 상태 관리** ✅ - 완료
+  - ✅ components/analyze/analyze-container.tsx 클라이언트 컨테이너 구현
+  - ✅ useReducer 기반 상태 관리 (select-a -> select-b -> ready -> analyzing -> result)
+  - ✅ AnalyzeState 및 AnalyzeAction 타입 적용
+  - ✅ 단계별 UI 분기 렌더링 로직
 
-- **Task 018: 제품 검색 UI 및 슬롯 선택**
-  - components/analyze/step-indicator.tsx 슬롯 A/B 단계 표시 컴포넌트
-  - components/analyze/product-search.tsx shadcn/ui Command(cmdk) 기반 검색 UI
-  - 검색 API 연동 (GET /api/products/search) 및 디바운스 처리
-  - 슬롯 A 선택 완료 시 자동 슬롯 B 모드 전환
-  - 선택된 제품 정보 표시 및 변경/초기화 기능
-  - Playwright MCP를 활용한 검색 -> 선택 플로우 E2E 테스트
+- **Task 018: 제품 검색 UI 및 슬롯 선택** ✅ - 완료
+  - ✅ components/analyze/step-indicator.tsx 슬롯 A/B 단계 표시 컴포넌트
+  - ✅ components/analyze/product-search.tsx shadcn/ui Command(cmdk) 기반 검색 UI
+  - ✅ 검색 API 연동 (GET /api/products/search) 및 디바운스 처리
+  - ✅ 슬롯 A 선택 완료 시 자동 슬롯 B 모드 전환
+  - ✅ 선택된 제품 정보 표시 및 변경/초기화 기능
 
 ---
 
-### Phase 5: UI 분석 결과 + 성분 직접 입력
+### Phase 5: UI 분석 결과 + 성분 직접 입력 ✅
 
-- **Task 019: 분석 결과 패널 구현** - 우선순위
-  - components/analyze/result-panel.tsx 분석 결과 패널 컴포넌트
-  - components/analyze/conflict-card.tsx 충돌 카드 컴포넌트 (severity별 색상: high=빨강, medium=주황, caution=노랑)
-  - 충돌 있음 상태: 충돌 성분 카드 목록 + 루틴 분리 권장사항 표시
-  - 충돌 없음 상태: 초록 안전 배지 + 시너지 성분 하이라이트
-  - "돌아가기" 버튼 -> 초기 상태(select-a) 리셋
-  - POST /api/analyze 연동 및 로딩/에러 상태 처리
+- **Task 019: 분석 결과 패널 구현** ✅ - 완료
+  - ✅ components/analyze/result-panel.tsx 분석 결과 패널 컴포넌트
+  - ✅ components/analyze/conflict-card.tsx 충돌 카드 컴포넌트 (severity별 색상)
+  - ✅ 충돌 있음 상태: 충돌 성분 카드 목록 + 루틴 분리 권장사항 표시
+  - ✅ 충돌 없음 상태: 초록 안전 배지 + 시너지 성분 하이라이트
+  - ✅ "돌아가기" 버튼 -> 초기 상태(select-a) 리셋
+  - ✅ POST /api/analyze 연동 및 로딩/에러 상태 처리
 
-- **Task 020: 성분 직접 입력 다이얼로그**
-  - components/analyze/manual-input-dialog.tsx 구현
-  - shadcn/ui Dialog 기반 모달 UI
-  - 쉼표 구분 성분 텍스트 입력 영역 (textarea)
-  - POST /api/ingredients/match 연동으로 입력 성분 파싱 및 DB 매칭
-  - 매칭 결과 미리보기 (매칭 성공/실패 성분 구분 표시)
-  - 확인 시 슬롯에 manual 타입으로 성분 데이터 적용
-  - Playwright MCP를 활용한 직접 입력 -> 분석 플로우 E2E 테스트
+- **Task 020: 성분 직접 입력 다이얼로그** ✅ - 완료
+  - ✅ components/analyze/manual-input-dialog.tsx 구현
+  - ✅ shadcn/ui Dialog 기반 모달 UI
+  - ✅ 쉼표 구분 성분 텍스트 입력 영역 (textarea)
+  - ✅ POST /api/ingredients/match 연동으로 입력 성분 파싱 및 DB 매칭
+  - ✅ 매칭 결과 미리보기 (매칭 성공/실패 성분 구분 표시)
+  - ✅ 확인 시 슬롯에 manual 타입으로 성분 데이터 적용
 
 - **Task 021: 사용자 플로우 통합 테스트**
   - Playwright MCP를 사용한 전체 사용자 여정 E2E 테스트
@@ -276,13 +266,13 @@
 
 ## 진행 상황 요약
 
-| Phase    | 상태    | Task 수 | 완료  |
-| -------- | ------- | ------- | ----- |
-| Phase 0  | ✅      | 2       | 2     |
-| Phase 1  | ✅      | 5       | 5     |
-| Phase 2  | 진행 중 | 4       | 1     |
-| Phase 3  | 대기    | 4       | 0     |
-| Phase 4  | 대기    | 4       | 0     |
-| Phase 5  | 대기    | 3       | 0     |
-| Phase 6  | 대기    | 4       | 0     |
-| **합계** |         | **26**  | **8** |
+| Phase    | 상태    | Task 수 | 완료   |
+| -------- | ------- | ------- | ------ |
+| Phase 0  | ✅      | 2       | 2      |
+| Phase 1  | ✅      | 5       | 5      |
+| Phase 2  | ✅      | 4       | 4      |
+| Phase 3  | 진행 중 | 4       | 3      |
+| Phase 4  | ✅      | 4       | 4      |
+| Phase 5  | 진행 중 | 3       | 2      |
+| Phase 6  | 대기    | 4       | 0      |
+| **합계** |         | **26**  | **20** |
