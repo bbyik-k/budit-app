@@ -299,6 +299,20 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      analyze_conflicts: {
+        Args: { names_a: string[]; names_b: string[] };
+        Returns: {
+          a_type: string;
+          b_type: string;
+          conflict_type: string;
+          ingredient_a: string;
+          ingredient_b: string;
+          reason_ko: string;
+          recommend: string;
+          severity: string;
+          source: string;
+        }[];
+      };
       log_unmatched: {
         Args: { p_product_id: string; p_raw_name: string };
         Returns: undefined;

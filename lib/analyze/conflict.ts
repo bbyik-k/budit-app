@@ -1,5 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
+import type { Database } from "@/lib/database.types";
 import type { ConflictResult, SynergyResult } from "@/types/analyze";
+
+type AnalyzeConflictsRow =
+  Database["public"]["Functions"]["analyze_conflicts"]["Returns"][number];
 
 /**
  * 성분명 집합 A/B를 받아 DB RPC로 충돌 규칙 조회
@@ -25,7 +29,7 @@ export async function analyzeConflicts(
   const conflicts: ConflictResult[] = [];
   const synergies: SynergyResult[] = [];
 
-  for (const r of rules ?? []) {
+  for (const r of (rules ?? []) as AnalyzeConflictsRow[]) {
     if (r.conflict_type === "synergy") {
       synergies.push({
         ingredientA: r.ingredient_a,
