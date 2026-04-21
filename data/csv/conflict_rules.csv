@@ -1,14 +1,53 @@
 ingredient_a,ingredient_b,a_type,b_type,conflict_type,severity,reason_ko,recommend,source
-AHA 계열,레티놀 계열,group,group,avoid,high,"AHA의 낮은 pH(3.0~4.0)가 레티놀을 불안정하게 만들어 산화 분해 촉진. 동시 사용 시 레티놀 효능 소실 및 피부 자극 위험.","레티놀: 저녁 루틴 / AHA: 격일 저녁 루틴으로 분리 사용",The Ordinary
-BHA 계열,레티놀 계열,group,group,avoid,high,"살리실산의 산성 pH가 레티놀 구조를 불안정하게 만들고 피부 자극 위험 증가. AHA와 동일 메커니즘.","레티놀 사용일과 BHA 사용일을 격일로 분리",The Ordinary
-구리 펩타이드 계열,레티놀 계열,group,group,avoid,high,"구리 이온이 레티놀을 산화시켜 효력을 소멸시킴. The Ordinary에서 동시 사용을 공식적으로 금지하는 대표 조합.","아침(구리 펩타이드) / 저녁(레티놀) 또는 격일 분리 사용",The Ordinary
-나이아신아마이드,비타민C 계열,ingredient,group,caution,medium,"순수 비타민C(아스코르브산)와 나이아신아마이드를 고농도로 혼합 시 니코틴산으로 전환되어 피부 홍조 유발 가능. 비타민C 유도체(아스코르빌글루코사이드 등)와는 해당 없음.","5% 미만 저농도 제품 조합이라면 함께 사용 가능. 고농도 순수 비타민C는 분리 사용 권장.",Paula's Choice
-AHA 계열,펩타이드 계열,group,group,caution,medium,"AHA의 낮은 pH가 펩타이드 구조(아미노산 결합)를 변성시켜 펩타이드 효능 저하 가능.","AHA 적용 2~3분 후 흡수된 다음 펩타이드 제품 사용",The Ordinary
-레티놀 계열,비타민C 계열,group,group,avoid,high,"산성 환경(비타민C)에서 레티놀 산화 분해 촉진. 두 성분 모두 활성 성분으로 동시 사용 시 자극 위험도 증가.","아침(비타민C) / 저녁(레티놀)으로 루틴 분리",The Ordinary
-BHA 계열,펩타이드 계열,group,group,caution,medium,"살리실산의 산성 pH가 펩타이드 변성을 유발할 수 있음. AHA 계열과 동일 메커니즘.","BHA 흡수 후 시간 간격을 두고 펩타이드 제품 사용",The Ordinary
-비타민C 계열,아연 계열,group,group,caution,medium,"아연 이온이 아스코르브산과 결합하여 비타민C의 산화 안정성을 저하시킬 수 있음.","저농도 제품이라면 함께 사용 가능. 고농도 조합은 분리 권장.",Paula's Choice
-AHA 계열,EGF 및 성장인자 계열,group,group,avoid,high,"EGF는 단백질 기반 성장인자로 AHA의 산성 pH에서 구조 변성. 효능이 완전히 소실됨.","AHA와 EGF는 반드시 다른 시간대 또는 격일 사용",manual
-BHA 계열,EGF 및 성장인자 계열,group,group,avoid,high,"BHA의 산성 pH에서 EGF 단백질 구조 변성. AHA와 동일한 이유로 금지 조합.","BHA와 EGF는 반드시 다른 시간대 또는 격일 사용",manual
-세라마이드,히알루론산,ingredient,ingredient,synergy,,,"수분 공급(히알루론산)과 피부 장벽 강화(세라마이드)의 상호 보완 시너지. 동시 사용 시 보습 효과 극대화.",,manual
-나이아신아마이드,세라마이드,ingredient,ingredient,synergy,,,"나이아신아마이드의 피부 장벽 강화 효과가 세라마이드와 시너지. 피부 진정 및 보습 효과 동시 달성.",,manual
-나이아신아마이드,히알루론산,ingredient,ingredient,synergy,,,"나이아신아마이드(모공·유분 조절, 미백)와 히알루론산(수분 보유력)의 보완 시너지. 건성·지성 모두 적합한 조합.",,manual
+AHA 계열,레티놀 계열,group,group,avoid,high,"AHA pH(3.0~4.0)가 레티놀 산화 분해 촉진. 동시 사용 시 레티놀 효능 소실 및 피부 자극 위험.","레티놀 저녁 루틴 / AHA 격일 저녁 루틴으로 분리 사용",The Ordinary
+BHA 계열,레티놀 계열,group,group,avoid,high,"BHA 산성 pH가 레티놀 구조를 불안정하게 만들어 효능 소실 및 피부 자극 위험 증가.","레티놀 사용일과 BHA 사용일을 격일로 분리",The Ordinary
+구리 펩타이드 계열,레티놀 계열,group,group,avoid,high,"구리 이온이 레티놀을 산화시켜 효력을 완전히 소멸시킴. 동시 사용 시 레티놀 효능 기대 불가.","아침(구리 펩타이드) / 저녁(레티놀) 또는 격일 분리 사용",The Ordinary
+레티놀 계열,비타민C 계열,group,group,avoid,high,"비타민C 산성 환경에서 레티놀 산화 분해 촉진. 두 성분 모두 활성 성분으로 자극 위험 증가.","아침(비타민C) / 저녁(레티놀)으로 루틴 분리",The Ordinary
+AHA 계열,EGF 및 성장인자 계열,group,group,avoid,high,"AHA pH(3.0~4.0)에서 EGF 단백질 구조 변성, 효능 완전 소실.","AHA와 EGF는 반드시 다른 시간대 또는 격일 사용",manual
+BHA 계열,EGF 및 성장인자 계열,group,group,avoid,high,"BHA 산성 pH에서 EGF 단백질 변성. 동시 사용 시 EGF 효능 기대 불가.","BHA와 EGF는 반드시 다른 시간대 또는 격일 사용",manual
+AHA 계열,구리 펩타이드 계열,group,group,avoid,high,"AHA 낮은 pH가 GHK-Cu 구조를 불안정화시켜 구리 펩타이드 효능 소실.","AHA와 구리 펩타이드는 격일 분리 사용",The Ordinary
+BHA 계열,구리 펩타이드 계열,group,group,avoid,high,"BHA 산성 환경이 구리 펩타이드 구조 변성 유발, 효능 소실.","BHA와 구리 펩타이드는 격일 분리 사용",The Ordinary
+비타민C 계열,EGF 및 성장인자 계열,group,group,avoid,high,"비타민C pH(2.0~3.5)에서 EGF 단백질 변성, 효능 완전 소실.","비타민C 아침 / EGF 저녁으로 루틴 분리",manual
+나이아신아마이드 계열,비타민C 계열,group,group,caution,medium,"고농도 순수 비타민C와 나이아신아마이드 혼합 시 니코틴산 전환으로 홍조 가능. 비타민C 유도체는 해당 없음.","5% 미만 저농도라면 함께 가능. 고농도 순수 비타민C는 분리 사용 권장.",Paula's Choice
+AHA 계열,펩타이드 계열,group,group,caution,medium,"AHA 낮은 pH가 펩타이드 아미노산 결합을 변성시켜 효능 저하 가능.","AHA 적용 2~3분 후 흡수된 다음 펩타이드 제품 사용",The Ordinary
+BHA 계열,펩타이드 계열,group,group,caution,medium,"BHA 산성 pH가 펩타이드 변성을 유발할 수 있음. AHA 계열과 동일 메커니즘.","BHA 흡수 후 시간 간격을 두고 펩타이드 제품 사용",The Ordinary
+비타민C 계열,아연 계열,group,group,caution,medium,"아연 이온이 아스코르브산과 결합하여 비타민C 산화 안정성을 저하시킬 수 있음.","저농도 조합은 가능. 고농도 조합은 분리 권장.",Paula's Choice
+나이아신아마이드 계열,AHA 계열,group,group,caution,medium,"AHA pH(3.0~4.0) 환경에서 나이아신아마이드가 니코틴산으로 전환되어 홍조 위험.","고농도 AHA 제품과 분리. 저농도 AHA 토너는 함께 가능.",Paula's Choice
+나이아신아마이드 계열,BHA 계열,group,group,caution,medium,"BHA 산성 pH에서 나이아신아마이드 전환 반응 가능, 효능 저하 우려.","고농도 BHA 제품과 분리 사용.",Paula's Choice
+비타민C 계열,펩타이드 계열,group,group,caution,medium,"비타민C 낮은 pH가 펩타이드 아미노산 결합을 변성시켜 효능 저하 가능.","비타민C 흡수 후 시간 간격을 두고 펩타이드 적용",The Ordinary
+비타민C 계열,구리 펩타이드 계열,group,group,caution,medium,"구리 이온이 비타민C 산화를 촉진, 안정성 저하 및 갈변 가능.","아침(비타민C) / 저녁(구리 펩타이드)으로 루틴 분리",The Ordinary
+AHA 계열,아연 계열,group,group,caution,medium,"AHA 낮은 pH에서 아연 이온 안정성 저하, 피부 자극 가능.","AHA 충분히 흡수 후 아연 함유 제품 사용. 또는 아침/저녁 분리.",manual
+BHA 계열,아연 계열,group,group,caution,medium,"BHA 산성 환경에서 아연 이온 안정성 저하.","BHA 흡수 후 아연 함유 제품 적용.",manual
+향료 계열,레티놀 계열,group,group,caution,medium,"향료가 피부 감작을 유발할 수 있으며 레티놀과 동시 사용 시 자극이 복합되어 민감성 피부 홍조·따가움 위험 증가.","레티놀 루틴 중 향료 포함 제품 최소화. 무향 제품으로 전환 권장.",manual
+향료 계열,AHA 계열,group,group,caution,medium,"AHA가 각질층 제거 후 피부 투과성 증가로 향료 성분이 더 깊이 침투, 자극 위험 증가.","AHA 사용 시 무향 제품 조합 권장.",manual
+향료 계열,BHA 계열,group,group,caution,medium,"BHA 사용으로 증가된 피부 투과성에 향료가 더 깊이 흡수, 접촉성 피부염 위험.","BHA 사용 시 무향 제품 조합 권장.",manual
+방부제 계열,향료 계열,group,group,caution,low,"일부 방부제와 향료 성분의 조합이 민감성 피부에서 접촉성 피부염 유발 가능.","민감성 피부는 방부제+향료 복합 제품 사용 시 주의. 무향·저자극 방부제 함유 제품 선택 권장.",manual
+히알루론산 계열,세라마이드 계열,group,group,synergy,,,"히알루론산(수분 공급·흡착)과 세라마이드(장벽 강화·수분 잠금)의 완벽한 보습 시너지. 수분 채우고 잠그는 이상적인 조합.",,manual
+나이아신아마이드 계열,세라마이드 계열,group,group,synergy,,,"나이아신아마이드의 장벽 강화·모공 수렴 효과가 세라마이드 지질 장벽과 시너지. 손상된 피부 장벽 회복에 이상적.",,manual
+나이아신아마이드 계열,히알루론산 계열,group,group,synergy,,,"나이아신아마이드(모공 수렴·피지 조절·미백)와 히알루론산(수분 보유)의 보완 시너지. 지성·복합성 피부에 적합.",,manual
+히알루론산 계열,보습제 계열,group,group,synergy,,,"히알루론산 고분자 수분 유지력과 글리세린·부틸렌글라이콜 소분자 보습제의 수분 흡착 시너지. 다층 보습 효과.",,manual
+세라마이드 계열,에몰리언트 계열,group,group,synergy,,,"세라마이드(세포 간 지질 구조 복구)와 에몰리언트(표면 유막 형성)의 이중 장벽 강화. 건성·민감성 피부 회복에 최적.",,manual
+진정 성분 계열,세라마이드 계열,group,group,synergy,,,"마데카소사이드·알란토인 등 진정 성분이 염증을 가라앉히고 세라마이드가 손상 장벽을 복구. 트러블 진정 후 회복에 이상적.",,manual
+진정 성분 계열,히알루론산 계열,group,group,synergy,,,"피부 진정과 수분 공급을 동시에 달성하는 조합. 붉어지고 자극받은 피부 즉각 케어에 적합.",,manual
+진정 성분 계열,보습제 계열,group,group,synergy,,,"진정 성분이 피부 자극을 완화하는 동시에 보습제가 수분 장벽을 형성. 예민해진 피부 안정화에 효과적.",,manual
+항산화제 계열,비타민C 계열,group,group,synergy,,,"비타민E(토코페롤) 등 항산화제와 비타민C는 서로를 재생시키는 항산화 시너지. 단독 대비 자유라디칼 중화 효과 약 4배 향상.",,Paula's Choice
+펩타이드 계열,히알루론산 계열,group,group,synergy,,,"펩타이드(콜라겐·엘라스틴 합성 촉진)와 히알루론산(세포외기질 수분 공급)의 안티에이징 시너지. 탄력·수분 동시 케어.",,manual
+나이아신아마이드 계열,항산화제 계열,group,group,synergy,,,"나이아신아마이드의 미백·항산화 기능과 토코페롤 등 항산화제의 결합으로 산화 스트레스 방어 시너지.",,manual
+주름개선 성분 계열,히알루론산 계열,group,group,synergy,,,"아데노신(세포 신호 전달·콜라겐 합성)과 히알루론산(수분 공급)의 안티에이징 조합. 피부 탄력·볼륨 동시 개선.",,manual
+주름개선 성분 계열,펩타이드 계열,group,group,synergy,,,"아데노신과 펩타이드가 각기 다른 경로로 콜라겐 합성을 촉진하는 보완적 안티에이징 시너지.",,manual
+레티놀 계열,보습제 계열,group,group,synergy,,,"글리세린·히알루론산 등 보습제가 레티놀 사용 시 건조·각질 부작용(레티놀화)을 완화. 레티놀 피부 적응 초기 필수 조합.",,Paula's Choice
+레티놀 계열,세라마이드 계열,group,group,synergy,,,"세라마이드가 레티놀 사용으로 손상된 피부 장벽을 복구. 레티놀 자극 완화 및 사용 내성 향상에 효과적.",,Paula's Choice
+항산화제 계열,레티놀 계열,group,group,synergy,,,"토코페롤 등 항산화제가 레티놀 산화 분해를 억제, 안정성·효능 유지. 레티놀 제품과 함께 사용 시 효력 보존.",,manual
+발효 성분 계열,히알루론산 계열,group,group,synergy,,,"발효 공정 저분자화 활성 성분이 히알루론산 흡수 촉진 및 피부 컨디셔닝 시너지 발휘.",,manual
+나이아신아마이드 계열,아연 계열,group,group,synergy,,,"나이아신아마이드와 아연의 피지 조절·모공 수렴 시너지. 지성·여드름성 피부에 가장 강력한 조합 중 하나.",,Paula's Choice
+세라마이드 계열,보습제 계열,group,group,synergy,,,"글리세린·베타인 등 보습제가 수분 공급하면 세라마이드가 내부에 잠금. 건성·민감성 피부의 핵심 보습 루틴.",,manual
+에몰리언트 계열,보습제 계열,group,group,synergy,,,"보습제(수분 흡착)와 에몰리언트(유막 형성)의 오일-워터 이중 보습 전략. 건성 피부 집중 케어에 효과적.",,manual
+킬레이트제 계열,비타민C 계열,group,group,synergy,,,"EDTA 등 킬레이트제가 금속 이온 봉쇄로 비타민C 산화를 억제, 비타민C 제품 안정성 대폭 향상.",,manual
+항산화제 계열,에몰리언트 계열,group,group,synergy,,,"토코페롤이 오일류·지방산의 산패를 억제하고 에몰리언트 피부 보호 효과를 강화. 오일 제품과 필수 시너지.",,manual
+발효 성분 계열,보습제 계열,group,group,synergy,,,"발효 성분이 피부 마이크로바이옴 환경을 개선하고 보습제 수분 흡착 효율을 향상. 복합 피부 컨디셔닝 효과.",,manual
+실리콘 계열,에몰리언트 계열,group,group,synergy,,,"실리콘(피막 형성·수분 증발 억제)과 에몰리언트(피부 유연성 부여)의 결합으로 장시간 피부 보호.",,manual
+유화제 계열,에몰리언트 계열,group,group,synergy,,,"유화제가 에몰리언트 오일을 수상에 균일 분산시켜 피부 흡수율 향상 및 발림성 개선.",,manual
+pH 조절제 계열,AHA 계열,group,group,synergy,,,"pH 조절제가 AHA 제품 pH를 3.0~4.0으로 최적화, 각질 용해 효과 극대화 및 피부 자극 최소화.",,manual
+점증제 계열,보습제 계열,group,group,synergy,,,"점증제가 보습 성분의 피부 접촉 시간을 늘려 흡수율을 향상, 제형 안정성 유지로 보습 효과 지속.",,manual
+기본 베이스 계열,히알루론산 계열,group,group,synergy,,,"정제수가 히알루론산·보습 성분의 용매 역할을 하여 활성 성분의 피부 전달 효율 향상.",,manual
+질감조절제 계열,에몰리언트 계열,group,group,synergy,,,"실리카 등 질감 조절 성분이 에몰리언트의 끈적임을 줄이고 가볍고 산뜻한 피부 마감 구현.",,manual
