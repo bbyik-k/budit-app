@@ -1,6 +1,6 @@
 "use client";
 
-import { useReducer, useCallback, useState } from "react";
+import { useReducer, useCallback, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { X, FlaskConical, Loader2 } from "lucide-react";
 import type {
@@ -86,6 +86,14 @@ function SlotBadge({
 // ---------------------------------------------------------------------------
 export default function AnalyzeContainer() {
   const [state, dispatch] = useReducer(analyzeReducer, initialState);
+
+  /** 로고 클릭 시 발생하는 budit:reset 이벤트 수신 → 상태 초기화 */
+  useEffect(() => {
+    const handleReset = () => dispatch({ type: "RESET" });
+    window.addEventListener("budit:reset", handleReset);
+    return () => window.removeEventListener("budit:reset", handleReset);
+  }, []);
+
   /** 직접 입력 다이얼로그 열림 여부 */
   const [dialogOpen, setDialogOpen] = useState(false);
   /** 직접 입력 다이얼로그 대상 슬롯 */
