@@ -9,11 +9,26 @@ const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : "http://localhost:3000";
 
+const title = "부딪 | 화장품 성분 충돌 분석";
+const description =
+  "두 화장품의 성분 충돌 여부를 빠르게 확인하세요. 민감성 피부를 위한 성분 안전 분석 서비스.";
+
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "부딪 | 화장품 성분 충돌 분석",
-  description:
-    "두 화장품의 성분 충돌 여부를 빠르게 확인하세요. 민감성 피부를 위한 성분 안전 분석 서비스.",
+  title,
+  description,
+  openGraph: {
+    title,
+    description,
+    siteName: "부딪 Budit",
+    locale: "ko_KR",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title,
+    description,
+  },
 };
 
 const geistSans = Geist({
