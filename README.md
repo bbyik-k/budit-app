@@ -5,6 +5,8 @@
 두 화장품의 성분을 비교하여 충돌 여부를 즉시 확인하세요.  
 The Ordinary 충돌 차트 기반 과학적 분석으로 피부 트러블을 예방합니다.
 
+**🚀 라이브 서비스**: https://budit.vercel.app
+
 ---
 
 ## 주요 기능
@@ -224,11 +226,16 @@ pnpm install
 
 ### 2. 환경 변수 설정
 
-`.env.local` 파일을 생성하고 아래 값을 입력합니다:
+`.env.example`을 복사하여 `.env.local`을 생성하고 값을 입력합니다:
+
+```bash
+cp .env.example .env.local
+```
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 ```
 
 > Supabase 대시보드의 **Project Settings → API** 에서 확인할 수 있습니다.
