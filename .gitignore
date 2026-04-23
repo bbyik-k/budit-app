@@ -44,3 +44,9 @@ next-env.d.ts
 
 # shrimp task manager
 shrimp_data/memory/
+
+# prompt
+/docs/USER_PROMPTS.md
+
+# claude agent memory
+.claude/agent-memory/
