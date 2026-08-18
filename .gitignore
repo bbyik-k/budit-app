@@ -50,3 +50,5 @@ shrimp_data/memory/
 
 # claude agent memory
 .claude/agent-memory/
+# DB 백업 스냅샷 (전수 덤프 — 로컬 복구용)
+/data/fixtures/
