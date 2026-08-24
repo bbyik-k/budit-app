@@ -49,6 +49,7 @@ conflict_rules  (독립적 — 마지막에 실행 가능)
 | name                 | TEXT NOT NULL | 제품명                                     |
 | brand                | TEXT NOT NULL | 브랜드명                                   |
 | category             | TEXT NOT NULL | skincare / mask_pack / cleansing / suncare |
+| subcategory          | TEXT          | 소분류 (2026-08-18 추가, nullable)         |
 | oliveyoung_id        | TEXT UNIQUE   | 올리브영 상품 고유 ID                      |
 | oliveyoung_rank      | INT           | 카테고리 내 랭킹 (검색 결과 정렬 기준)     |
 | image_url            | TEXT          | 제품 이미지 URL                            |
@@ -239,6 +240,7 @@ CREATE TABLE products (
   name                  TEXT NOT NULL,
   brand                 TEXT NOT NULL,
   category              TEXT NOT NULL CHECK (category IN ('skincare','mask_pack','cleansing','suncare')),
+  subcategory           TEXT,  -- 2026-08-18 ALTER TABLE 로 추가
   oliveyoung_id         TEXT UNIQUE,
   oliveyoung_rank       INT,
   image_url             TEXT,
