@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Check, ChevronsUpDown, Pencil } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Check, ChevronsUpDown, Loader2, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -17,42 +17,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import type { SlotData } from "@/types/analyze";
-
-// ---------------------------------------------------------------------------
-// 더미 제품 데이터 (Phase 1 목업 — 실제 DB UUID 사용)
-// ---------------------------------------------------------------------------
-const DUMMY_PRODUCTS = [
-  {
-    id: "da2a4905-43c3-4829-b9e7-cecb126cf0df",
-    name: "토리든 다이브인 세럼",
-    brand: "토리든",
-  },
-  {
-    id: "16f71e35-6f26-43f2-a39c-87098dff14f5",
-    name: "이니스프리 레티놀 앰플",
-    brand: "이니스프리",
-  },
-  {
-    id: "dde5397d-90f7-4bdc-8fea-034f88cf41ad",
-    name: "에스트라 아토베리어365 크림",
-    brand: "에스트라",
-  },
-  {
-    id: "6fe4f229-db32-4f7f-a86a-06fcaae5f96b",
-    name: "메디힐 에센셜 마스크팩 (마데카소사이드)",
-    brand: "메디힐",
-  },
-  {
-    id: "8393e1e3-d9db-4e71-947e-a3e0eab9a9ef",
-    name: "메디힐 더마 패드 (마데카소사이드)",
-    brand: "메디힐",
-  },
-  {
-    id: "274f3174-259e-4dce-8133-ec45a98e1ae5",
-    name: "메노킨 퀵 버블 마스크 (리프트)",
-    brand: "메노킨",
-  },
-];
+import type { ProductSearchItem, ProductSearchResponse } from "@/types/api";
 
 interface ProductSearchProps {
   /** 슬롯 구분 레이블 */
@@ -69,8 +34,67 @@ export default function ProductSearch({
   onManualInput,
 }: ProductSearchProps) {
   const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [items, setItems] = useState<ProductSearchItem[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const handleSelect = (product: (typeof DUMMY_PRODUCTS)[number]) => {
+  // 250ms 디바운스 + AbortController로 이전 요청 취소 (응답 역전 방지)
+  useEffect(() => {
+    const trimmed = query.trim();
+
+    // 빈 쿼리는 서버가 400을 반환하므로 fetch 자체를 건너뛴다
+    if (!trimmed) {
+      setItems([]);
+      setLoading(false);
+      setErrorMsg(null);
+      return;
+    }
+
+    const controller = new AbortController();
+    setLoading(true);
+    setErrorMsg(null);
+
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch(
+          `/api/products/search?q=${encodeURIComponent(trimmed)}`,
+          { signal: controller.signal }
+        );
+
+        if (!res.ok) {
+          // 500 시 Next가 HTML을 반환할 수 있어 json() 파싱도 보호한다
+          let message = "검색 중 오류가 발생했습니다";
+          try {
+            const body = await res.json();
+            message = body?.error?.message ?? message;
+          } catch {
+            // 파싱 실패 시 기본 문구 유지
+          }
+          setItems([]);
+          setErrorMsg(message);
+          return;
+        }
+
+        const body: ProductSearchResponse = await res.json();
+        setItems(body.items ?? []);
+      } catch (err) {
+        // abort는 정상 취소이므로 에러로 표시하지 않는다
+        if (err instanceof Error && err.name === "AbortError") return;
+        setItems([]);
+        setErrorMsg("검색 중 오류가 발생했습니다");
+      } finally {
+        if (!controller.signal.aborted) setLoading(false);
+      }
+    }, 250);
+
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [query]);
+
+  const handleSelect = (product: ProductSearchItem) => {
     onSelect({
       type: "product",
       productId: product.id,
@@ -78,6 +102,17 @@ export default function ProductSearch({
       brand: product.brand,
     });
     setOpen(false);
+  };
+
+  // 팝오버 닫힘 시 검색 상태 초기화
+  const handleOpenChange = (next: boolean) => {
+    setOpen(next);
+    if (!next) {
+      setQuery("");
+      setItems([]);
+      setLoading(false);
+      setErrorMsg(null);
+    }
   };
 
   return (
@@ -89,7 +124,7 @@ export default function ProductSearch({
 
       <div className="flex items-center gap-2">
         {/* 제품 검색 Popover + Command */}
-        <Popover open={open} onOpenChange={setOpen}>
+        <Popover open={open} onOpenChange={handleOpenChange}>
           <PopoverTrigger asChild>
             <Button
               variant="outline"
@@ -107,30 +142,57 @@ export default function ProductSearch({
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-sm p-0" align="start">
-            <Command>
-              <CommandInput placeholder="제품명 또는 브랜드 검색..." />
+            {/* 서버 검색 결과를 cmdk가 재필터링하지 않도록 shouldFilter 해제 */}
+            <Command shouldFilter={false}>
+              <CommandInput
+                placeholder="제품명 또는 브랜드 검색..."
+                value={query}
+                onValueChange={setQuery}
+              />
               <CommandList>
-                <CommandEmpty>검색 결과가 없습니다.</CommandEmpty>
-                <CommandGroup>
-                  {DUMMY_PRODUCTS.map((product) => (
-                    <CommandItem
-                      key={product.id}
-                      value={`${product.name} ${product.brand}`}
-                      onSelect={() => handleSelect(product)}
-                      className="flex items-center gap-2"
-                    >
-                      <Check size={14} className="opacity-0" />
-                      <div className="flex flex-col">
-                        <span className="text-sm font-medium">
-                          {product.name}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          {product.brand}
-                        </span>
-                      </div>
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
+                {loading && (
+                  <div className="flex items-center justify-center gap-2 py-6 text-sm text-muted-foreground">
+                    <Loader2 size={14} className="animate-spin" />
+                    검색 중...
+                  </div>
+                )}
+
+                {!loading && errorMsg && (
+                  <div className="py-6 text-center text-sm text-destructive">
+                    {errorMsg}
+                  </div>
+                )}
+
+                {/* shouldFilter={false}에서는 CommandEmpty가 빈 쿼리에도 뜨므로 조건부 렌더 */}
+                {!loading &&
+                  !errorMsg &&
+                  query.trim() &&
+                  items.length === 0 && (
+                    <CommandEmpty>검색 결과가 없습니다.</CommandEmpty>
+                  )}
+
+                {items.length > 0 && (
+                  <CommandGroup>
+                    {items.map((product) => (
+                      <CommandItem
+                        key={product.id}
+                        value={product.id}
+                        onSelect={() => handleSelect(product)}
+                        className="flex items-center gap-2"
+                      >
+                        <Check size={14} className="opacity-0" />
+                        <div className="flex flex-col">
+                          <span className="text-sm font-medium">
+                            {product.name}
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            {product.brand}
+                          </span>
+                        </div>
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                )}
               </CommandList>
             </Command>
           </PopoverContent>
