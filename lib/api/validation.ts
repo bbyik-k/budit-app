@@ -45,3 +45,38 @@ export const analyzeBodySchema = z.object({
   slotA: slotSchema,
   slotB: slotSchema,
 });
+
+// ---------------------------------------------------------------------------
+// RPC 응답 검증 스키마
+//
+// 주의: lib/database.types.ts의 자동생성 타입은 analyze_conflicts 반환 9컬럼을
+// 전부 non-nullable string으로 선언하지만, 실제 DDL은 severity/recommend/source가
+// NULL 허용이다. synergy 행은 severity가 실제로 null로 내려오므로 nullable 필수.
+// reason_ko는 NOT NULL이지만 synergy 행에서 빈 문자열이므로 .min(1) 금지.
+// .strict()도 금지 — RPC 본문이 SELECT DISTINCT cr.*라 추가 키가 올 수 있으며,
+// 기본 z.object의 stripping에 의존한다.
+// ---------------------------------------------------------------------------
+
+// analyze_conflicts RPC 반환 행 스키마
+export const analyzeConflictsRowSchema = z.object({
+  ingredient_a: z.string(),
+  ingredient_b: z.string(),
+  a_type: z.string(),
+  b_type: z.string(),
+  conflict_type: z.enum(["avoid", "caution", "synergy"]),
+  severity: z.enum(["high", "medium", "low"]).nullable(),
+  reason_ko: z.string(),
+  recommend: z.string().nullable(),
+  source: z.string().nullable(),
+});
+
+export const analyzeConflictsRowsSchema = z.array(analyzeConflictsRowSchema);
+
+// match_ingredient_fuzzy RPC 반환 행 스키마
+export const fuzzyMatchRowSchema = z.object({
+  ingredient_id: z.uuid(),
+  name: z.string(),
+  similarity: z.number(),
+});
+
+export const fuzzyMatchRowsSchema = z.array(fuzzyMatchRowSchema);
