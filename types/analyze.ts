@@ -4,6 +4,7 @@ export type AnalyzeStep =
   | "select-b"
   | "ready"
   | "analyzing"
+  | "error"
   | "result";
 
 /** 슬롯에 담기는 데이터 (제품 선택 또는 직접 입력) */
@@ -22,14 +23,18 @@ export interface AnalyzeState {
   slotA: SlotData | null;
   slotB: SlotData | null;
   result: AnalyzeResult | null;
+  /** 분석 실패 정보 (error step에서 표시) */
+  error: { code?: string; message: string } | null;
 }
 
 /** 상태 변경 액션 */
 export type AnalyzeAction =
   | { type: "SELECT_SLOT_A"; payload: SlotData }
   | { type: "SELECT_SLOT_B"; payload: SlotData }
+  | { type: "CLEAR_SLOT_B" }
   | { type: "START_ANALYZE" }
   | { type: "SET_RESULT"; payload: AnalyzeResult }
+  | { type: "SET_ERROR"; payload: { code?: string; message: string } }
   | { type: "RESET" };
 
 /** 충돌 규칙 결과 */

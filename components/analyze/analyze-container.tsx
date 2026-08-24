@@ -2,7 +2,13 @@
 
 import { useReducer, useCallback, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { X, FlaskConical, Loader2 } from "lucide-react";
+import {
+  X,
+  FlaskConical,
+  Loader2,
+  AlertTriangle,
+  RotateCcw,
+} from "lucide-react";
 import type {
   AnalyzeState,
   AnalyzeAction,
@@ -22,10 +28,20 @@ const initialState: AnalyzeState = {
   slotA: null,
   slotB: null,
   result: null,
+  error: null,
 };
 
 // ---------------------------------------------------------------------------
-// Reducer
+// Reducer — 전이표 기반. 허용되지 않는 (step, action) 조합은 state를 그대로 반환한다.
+//
+// | action        | 허용 from step   | to step   | 상태 변경                   |
+// | SELECT_SLOT_A | select-a         | select-b  | slotA = payload             |
+// | SELECT_SLOT_B | select-b         | ready     | slotB = payload             |
+// | CLEAR_SLOT_B  | ready            | select-b  | slotB = null                |
+// | START_ANALYZE | ready, error     | analyzing | error = null, result = null |
+// | SET_RESULT    | analyzing        | result    | result = payload            |
+// | SET_ERROR     | analyzing        | error     | error = payload             |
+// | RESET         | 모든 step        | select-a  | initialState                |
 // ---------------------------------------------------------------------------
 function analyzeReducer(
   state: AnalyzeState,
@@ -33,13 +49,23 @@ function analyzeReducer(
 ): AnalyzeState {
   switch (action.type) {
     case "SELECT_SLOT_A":
+      if (state.step !== "select-a") return state;
       return { ...state, slotA: action.payload, step: "select-b" };
     case "SELECT_SLOT_B":
+      if (state.step !== "select-b") return state;
       return { ...state, slotB: action.payload, step: "ready" };
+    case "CLEAR_SLOT_B":
+      if (state.step !== "ready") return state;
+      return { ...state, slotB: null, step: "select-b" };
     case "START_ANALYZE":
-      return { ...state, step: "analyzing" };
+      if (state.step !== "ready" && state.step !== "error") return state;
+      return { ...state, step: "analyzing", error: null, result: null };
     case "SET_RESULT":
+      if (state.step !== "analyzing") return state;
       return { ...state, result: action.payload, step: "result" };
+    case "SET_ERROR":
+      if (state.step !== "analyzing") return state;
+      return { ...state, error: action.payload, step: "error" };
     case "RESET":
       return initialState;
     default:
@@ -111,14 +137,30 @@ export default function AnalyzeContainer() {
       });
       if (!res.ok) {
         console.error("[handleAnalyze] API error:", res.status);
-        dispatch({ type: "RESET" });
+        // 서버 에러 바디 { error: { code, message } } 파싱 — 실패 시 기본 문구
+        let payload = { message: "분석 중 오류가 발생했습니다" } as {
+          code?: string;
+          message: string;
+        };
+        try {
+          const body = await res.json();
+          if (body?.error?.message) {
+            payload = { code: body.error.code, message: body.error.message };
+          }
+        } catch {
+          // 500 시 HTML이 올 수 있어 파싱 실패는 무시하고 기본 문구 사용
+        }
+        dispatch({ type: "SET_ERROR", payload });
         return;
       }
       const payload: AnalyzeResult = await res.json();
       dispatch({ type: "SET_RESULT", payload });
     } catch (err) {
       console.error("[handleAnalyze] fetch error:", err);
-      dispatch({ type: "RESET" });
+      dispatch({
+        type: "SET_ERROR",
+        payload: { message: "네트워크 오류로 분석에 실패했습니다" },
+      });
     }
   }, [state.slotA, state.slotB]);
 
@@ -129,8 +171,8 @@ export default function AnalyzeContainer() {
 
   /** 슬롯 B 선택 해제 → select-b 상태로 복귀 */
   const handleClearSlotB = useCallback(() => {
-    dispatch({ type: "SELECT_SLOT_A", payload: state.slotA! });
-  }, [state.slotA]);
+    dispatch({ type: "CLEAR_SLOT_B" });
+  }, []);
 
   /** 직접 입력 다이얼로그 열기 */
   const handleOpenManualInput = useCallback((slot: "A" | "B") => {
@@ -245,6 +287,36 @@ export default function AnalyzeContainer() {
           <p className="text-sm font-medium text-muted-foreground">
             성분 충돌을 분석하는 중입니다...
           </p>
+        </div>
+      )}
+
+      {/* ── 분석 실패 ── */}
+      {state.step === "error" && (
+        <div className="flex flex-col items-center gap-4 rounded-xl border border-destructive/40 bg-card p-10 text-center">
+          <AlertTriangle size={32} className="text-destructive" />
+          <div className="flex flex-col gap-1">
+            <p className="text-sm font-semibold text-destructive">
+              분석에 실패했습니다
+            </p>
+            <p className="text-sm text-muted-foreground">
+              {state.error?.message ?? "알 수 없는 오류가 발생했습니다"}
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              onClick={handleAnalyze}
+              className="gap-2 bg-brand text-brand-foreground hover:bg-brand/90"
+            >
+              <RotateCcw size={16} />
+              재시도
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => dispatch({ type: "RESET" })}
+            >
+              처음부터
+            </Button>
+          </div>
         </div>
       )}
 
