@@ -34,9 +34,11 @@ export async function POST(req: NextRequest) {
 
   // 매칭 엔진 실행
   try {
+    // 미리보기는 읽기 동작이므로 미매칭 로그를 남기지 않는다
     const result = await matchIngredients(
       parsed.data.ingredients,
-      parsed.data.product_id
+      parsed.data.product_id,
+      { logUnmatched: false }
     );
     return Response.json(result satisfies MatchResponse);
   } catch (err) {
