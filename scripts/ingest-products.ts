@@ -59,6 +59,8 @@ function parseArgs(argv: string[]): CliOptions {
 
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
+    // `pnpm ingest -- --limit 10` 형태에서 pnpm이 넘기는 구분자는 무시한다
+    if (arg === "--") continue;
     if (arg === "--file") {
       const value = argv[i + 1];
       if (!value) throw new Error("--file 뒤에 경로가 필요합니다");
