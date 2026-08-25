@@ -384,7 +384,6 @@ if (error) {
 
 > 작성일: 2026-08-25 · 대상: 위 「문제 3」의 원인 진단
 > 위 본문은 2026-04-21 당시 기록이므로 수정하지 않았다. 이 절이 정정 내용이다.
-> 상세 근거는 [`docs/test-reports/2026-08-25-url-length-claim-verification.md`](../test-reports/2026-08-25-url-length-claim-verification.md) 참조.
 
 ### 1. 1차 트리거는 URL 길이가 아니라 HTTP 헤더 오버플로다
 

@@ -1,7 +1,6 @@
 # BUDIT — 분석 화면 실배선 작업 계획 (1~6번)
 
 > 작성일: 2026-08-14 · 상태: **1~2번 완료, 3~6번 대기**
-> 1~2번 확인 결과는 [`docs/test-reports/2026-08-14-normalize-and-repro-check.md`](../test-reports/2026-08-14-normalize-and-repro-check.md) 참조.
 > 아래 "확인 불가 항목" 3건은 2번 실행으로 **전부 해소**됐다 (해당 섹션의 갱신 표 참조).
 
 ## Context
@@ -179,7 +178,7 @@ a~d를 표로 보고. RPC는 **성분명 배열**과 **그룹명 배열** 두 �
 e는 코드 조사로 이미 확정:
 
 - 테스트로 고정돼 있지 **않음** (테스트 파일·러너 자체가 없음)
-- 문서로는 고정됨: `docs/troubleshooting/2026-04-21-conflict-analysis-fix.md:24`, `docs/DATA_STATUS.md:13`, `docs/RESUME_FACTCHECK.md:138`, `docs/test-reports/2026-04-21-task-014-api-integration.md:34`
+- 문서로는 고정됨: `docs/troubleshooting/2026-04-21-conflict-analysis-fix.md:24`, `docs/DATA_STATUS.md:13`
 - 특정 방식은 **제품명**. 올리브영 코드 `A000000230208`/`A000000171427`은 `data/toyfiles/toy_products.csv:4,6`에만 있고 코드·문서 어디에도 없음
 
 ---
