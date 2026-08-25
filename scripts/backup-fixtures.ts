@@ -116,8 +116,10 @@ async function main() {
   const outDir = path.resolve(process.cwd(), "data", "fixtures");
   fs.mkdirSync(outDir, { recursive: true });
 
-  const dateStr = takenAt.slice(0, 10);
-  const outPath = path.join(outDir, `backup-${dateStr}.json`);
+  // backup-YYYY-MM-DDTHHmmss.json — 같은 날 여러 번 실행해도 덮어쓰지 않는다
+  // (takenAt "2026-08-25T04:34:33.612Z" → "2026-08-25T043433")
+  const stamp = takenAt.slice(0, 19).replace(/:/g, "");
+  const outPath = path.join(outDir, `backup-${stamp}.json`);
 
   // 출력 페이로드에는 키·URL을 포함하지 않는다
   const payload = {
