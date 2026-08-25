@@ -42,6 +42,9 @@ const TABLES = [
   "products",
   "product_ingredients",
   "conflict_rules",
+  // unmatched_log 는 재적재 전 부분 삭제(product_id IS NOT NULL) 대상이라
+  // 백업에 포함해야 복구가 가능하다. products 이후여야 FK 순서가 맞는다.
+  "unmatched_log",
 ] as const;
 
 /** Supabase 기본 1000행 제한을 넘기기 위한 페이지 크기 */
