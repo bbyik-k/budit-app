@@ -41,7 +41,7 @@ conflict_rules  (독립적 — 마지막에 실행 가능)
 
 ### 1. `products` — 화장품 제품
 
-올리브영 상위 120개 제품 (4개 카테고리 × 30개).
+올리브영 상위 제품. 2026-08-25 기준 **362건** (skincare 122 · cleansing 118 · suncare 96 · mask_pack 26).
 
 | 컬럼                 | 타입          | 설명                                       |
 | -------------------- | ------------- | ------------------------------------------ |
@@ -49,6 +49,7 @@ conflict_rules  (독립적 — 마지막에 실행 가능)
 | name                 | TEXT NOT NULL | 제품명                                     |
 | brand                | TEXT NOT NULL | 브랜드명                                   |
 | category             | TEXT NOT NULL | skincare / mask_pack / cleansing / suncare |
+| subcategory          | TEXT          | 소분류 (2026-08-18 추가, nullable)         |
 | oliveyoung_id        | TEXT UNIQUE   | 올리브영 상품 고유 ID                      |
 | oliveyoung_rank      | INT           | 카테고리 내 랭킹 (검색 결과 정렬 기준)     |
 | image_url            | TEXT          | 제품 이미지 URL                            |
@@ -61,7 +62,7 @@ conflict_rules  (독립적 — 마지막에 실행 가능)
 
 ### 2. `ingredients` — 성분 마스터
 
-KCIA 기준 한국어 표준 성분명 DB (~21,805개).
+한국어 표준 성분명 DB. 2026-08-25 기준 **162종**. KCIA 화장품성분사전 전체 규모는 약 21,805개이며 현재는 그 부분집합만 적재돼 있다.
 
 | 컬럼          | 타입                 | 설명                              |
 | ------------- | -------------------- | --------------------------------- |
@@ -239,6 +240,7 @@ CREATE TABLE products (
   name                  TEXT NOT NULL,
   brand                 TEXT NOT NULL,
   category              TEXT NOT NULL CHECK (category IN ('skincare','mask_pack','cleansing','suncare')),
+  subcategory           TEXT,  -- 2026-08-18 ALTER TABLE 로 추가
   oliveyoung_id         TEXT UNIQUE,
   oliveyoung_rank       INT,
   image_url             TEXT,

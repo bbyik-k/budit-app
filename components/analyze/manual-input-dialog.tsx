@@ -1,7 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle2, XCircle } from "lucide-react";
+import {
+  Braces,
+  CheckCircle2,
+  Link2,
+  Loader2,
+  Sparkles,
+  XCircle,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,20 +18,9 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
+import { parseIngredientText } from "@/lib/ingredients/parse";
 import type { SlotData } from "@/types/analyze";
-
-// ---------------------------------------------------------------------------
-// 더미 매칭 DB (Phase 1 목업 — API 연동 전 하드코딩)
-// ---------------------------------------------------------------------------
-const KNOWN_INGREDIENTS = new Set([
-  "레티놀",
-  "비타민c",
-  "비타민C",
-  "나이아신아마이드",
-  "AHA",
-  "BHA",
-  "글리콜산",
-]);
+import type { MatchedItem, MatchResponse } from "@/types/api";
 
 interface ManualInputDialogProps {
   open: boolean;
@@ -43,36 +39,66 @@ export default function ManualInputDialog({
   onConfirm,
 }: ManualInputDialogProps) {
   const [inputText, setInputText] = useState("");
-  const [matchPreview, setMatchPreview] = useState(false);
+  const [matchResult, setMatchResult] = useState<MatchResponse | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  /** 쉼표 기준 파싱 */
-  const parsedIngredients = inputText
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean);
+  /** 전성분 텍스트 파싱 (괄호 깊이·@ 구분자·대괄호 노이즈 처리 포함) */
+  const parsedIngredients = parseIngredientText(inputText);
 
-  /** 더미 매칭 분류 */
-  const matched = parsedIngredients.filter((ing) => KNOWN_INGREDIENTS.has(ing));
-  const unmatched = parsedIngredients.filter(
-    (ing) => !KNOWN_INGREDIENTS.has(ing)
-  );
+  /** 미리보기 상태 전부 초기화 */
+  const resetPreview = () => {
+    setMatchResult(null);
+    setLoading(false);
+    setErrorMsg(null);
+  };
 
-  /** 다이얼로그 닫힐 때 내부 상태 초기화 */
+  /** 다이얼로그 닫힐 때 내부 상태 초기화 (상시 마운트라 A→B 전환 시 누수 방지) */
   const handleOpenChange = (nextOpen: boolean) => {
     if (!nextOpen) {
       setInputText("");
-      setMatchPreview(false);
+      resetPreview();
     }
     onOpenChange(nextOpen);
   };
 
-  /** '성분 확인' — 미리보기 상태로 전환 */
-  const handlePreview = () => {
+  /** '성분 확인' — 매칭 API 호출 */
+  const handlePreview = async () => {
     if (parsedIngredients.length === 0) return;
-    setMatchPreview(true);
+    setLoading(true);
+    setErrorMsg(null);
+    setMatchResult(null);
+
+    try {
+      const res = await fetch("/api/ingredients/match", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ingredients: parsedIngredients }),
+      });
+
+      if (!res.ok) {
+        // 500 시 Next가 HTML을 반환할 수 있어 json() 파싱도 보호한다
+        let message = "성분 확인 중 오류가 발생했습니다";
+        try {
+          const body = await res.json();
+          message = body?.error?.message ?? message;
+        } catch {
+          // 파싱 실패 시 기본 문구 유지
+        }
+        setErrorMsg(message);
+        return;
+      }
+
+      const body: MatchResponse = await res.json();
+      setMatchResult(body);
+    } catch {
+      setErrorMsg("성분 확인 중 오류가 발생했습니다");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  /** '분석에 사용' — 슬롯에 반영 후 닫기 */
+  /** '분석에 사용' — 슬롯에 반영 후 닫기 (원문 전체 전달) */
   const handleConfirm = () => {
     onConfirm({
       type: "manual",
@@ -81,6 +107,16 @@ export default function ManualInputDialog({
     });
     handleOpenChange(false);
   };
+
+  // 응답 기준 5분류
+  const byType = (t: MatchedItem["match_type"]) =>
+    matchResult?.matched.filter((m) => m.match_type === t) ?? [];
+  const exactItems = byType("exact");
+  const nospaceItems = byType("exact_nospace");
+  const aliasItems = byType("alias");
+  const fuzzyItems = byType("fuzzy");
+  const unmatchedItems = matchResult?.unmatched ?? [];
+  const totalCount = (matchResult?.matched.length ?? 0) + unmatchedItems.length;
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -100,38 +136,107 @@ export default function ManualInputDialog({
           <Textarea
             placeholder="예: 레티놀, 나이아신아마이드, 히알루론산, 세라마이드"
             value={inputText}
+            disabled={loading}
             onChange={(e) => {
               setInputText(e.target.value);
               /* 텍스트 변경 시 미리보기 초기화 */
-              setMatchPreview(false);
+              resetPreview();
             }}
             className="min-h-24 resize-none"
           />
 
-          {/* 파싱된 성분 수 표시 */}
+          {/* 파싱된 성분 수 표시 — 미리보기 후에는 응답 기준 합계 */}
           {parsedIngredients.length > 0 && (
             <p className="text-xs text-muted-foreground">
-              {parsedIngredients.length}개 성분 인식됨
+              {matchResult ? totalCount : parsedIngredients.length}개 성분
+              인식됨
             </p>
           )}
 
-          {/* 매칭 미리보기 */}
-          {matchPreview && parsedIngredients.length > 0 && (
+          {/* 오류 표시 */}
+          {errorMsg && (
+            <div className="rounded-lg border border-border bg-muted/30 p-3 text-sm text-destructive">
+              {errorMsg}
+            </div>
+          )}
+
+          {/* 매칭 미리보기 — 4분류 */}
+          {matchResult && (
             <div className="flex flex-col gap-2 rounded-lg border border-border bg-muted/30 p-3 text-sm">
-              {/* DB 매칭 성공 */}
-              {matched.length > 0 && (
+              {/* 정확 일치 */}
+              {exactItems.length > 0 && (
                 <div className="flex flex-col gap-1">
                   <div className="flex items-center gap-1.5 font-medium text-safe">
                     <CheckCircle2 size={14} />
-                    DB 매칭 성공 ({matched.length})
+                    정확 일치 ({exactItems.length})
                   </div>
                   <div className="flex flex-wrap gap-1 pl-5">
-                    {matched.map((ing) => (
+                    {exactItems.map((m, i) => (
                       <span
-                        key={ing}
+                        key={`exact-${i}`}
                         className="rounded-full bg-safe/10 px-2 py-0.5 text-xs text-safe"
                       >
-                        {ing}
+                        {m.ingredient_name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* 공백 무시 일치 */}
+              {nospaceItems.length > 0 && (
+                <div className="flex flex-col gap-1">
+                  <div className="flex items-center gap-1.5 font-medium text-safe">
+                    <Braces size={14} />
+                    공백 무시 일치 ({nospaceItems.length})
+                  </div>
+                  <div className="flex flex-wrap gap-1 pl-5">
+                    {nospaceItems.map((m, i) => (
+                      <span
+                        key={`nospace-${i}`}
+                        className="rounded-full bg-safe/10 px-2 py-0.5 text-xs text-safe"
+                      >
+                        {m.raw_name} → {m.ingredient_name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* 별칭 일치 */}
+              {aliasItems.length > 0 && (
+                <div className="flex flex-col gap-1">
+                  <div className="flex items-center gap-1.5 font-medium text-safe">
+                    <Link2 size={14} />
+                    별칭 일치 ({aliasItems.length})
+                  </div>
+                  <div className="flex flex-wrap gap-1 pl-5">
+                    {aliasItems.map((m, i) => (
+                      <span
+                        key={`alias-${i}`}
+                        className="rounded-full bg-safe/10 px-2 py-0.5 text-xs text-safe"
+                      >
+                        {m.raw_name} → {m.ingredient_name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* 유사 일치 */}
+              {fuzzyItems.length > 0 && (
+                <div className="flex flex-col gap-1">
+                  <div className="flex items-center gap-1.5 font-medium text-caution">
+                    <Sparkles size={14} />
+                    유사 일치 ({fuzzyItems.length})
+                  </div>
+                  <div className="flex flex-wrap gap-1 pl-5">
+                    {fuzzyItems.map((m, i) => (
+                      <span
+                        key={`fuzzy-${i}`}
+                        className="rounded-full bg-caution/10 px-2 py-0.5 text-xs text-caution"
+                      >
+                        {m.raw_name} → {m.ingredient_name}
                       </span>
                     ))}
                   </div>
@@ -139,19 +244,19 @@ export default function ManualInputDialog({
               )}
 
               {/* 미매칭 성분 */}
-              {unmatched.length > 0 && (
+              {unmatchedItems.length > 0 && (
                 <div className="flex flex-col gap-1">
                   <div className="flex items-center gap-1.5 font-medium text-muted-foreground">
                     <XCircle size={14} />
-                    미매칭 ({unmatched.length}) — 분석에는 포함됩니다
+                    미매칭 ({unmatchedItems.length}) — 분석에서 제외됩니다
                   </div>
                   <div className="flex flex-wrap gap-1 pl-5">
-                    {unmatched.map((ing) => (
+                    {unmatchedItems.map((name, i) => (
                       <span
-                        key={ing}
+                        key={`unmatched-${i}`}
                         className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground"
                       >
-                        {ing}
+                        {name}
                       </span>
                     ))}
                   </div>
@@ -163,12 +268,13 @@ export default function ManualInputDialog({
           {/* 버튼 영역 */}
           <div className="flex justify-end gap-2 pt-1">
             {/* 미리보기 전: '성분 확인' / 미리보기 후: '분석에 사용' */}
-            {!matchPreview ? (
+            {!matchResult ? (
               <Button
                 onClick={handlePreview}
-                disabled={parsedIngredients.length === 0}
+                disabled={parsedIngredients.length === 0 || loading}
                 className="bg-brand text-brand-foreground hover:bg-brand/90"
               >
+                {loading && <Loader2 size={14} className="animate-spin" />}
                 성분 확인
               </Button>
             ) : (

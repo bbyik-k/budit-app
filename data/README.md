@@ -8,28 +8,63 @@
 
 ```
 data/
+├── toyfiles/                            # MVP용 토이 데이터 (제품·성분·전성분 — 실사용)
+│   ├── toy_products.csv                 # 제품 마스터 (올리브영 실제 제품 6종)
+│   ├── toy_ingredients.csv              # 성분 마스터 (KCIA 표준명 131종)
+│   └── toy_product_ingredients.csv      # 제품 ↔ 성분 매핑 (전성분 222행)
 └── csv/
-    ├── ingredients.csv              # 성분 마스터 (KCIA 기준)
-    ├── ingredient_groups.csv        # 성분 그룹 정의 (The Ordinary 충돌 차트 기반)
-    ├── ingredient_group_members.csv # 성분 ↔ 그룹 매핑
-    ├── ingredient_aliases.csv       # 성분 별칭 (비표준 표기 → 표준명)
-    ├── products.csv                 # 올리브영 상위 제품 목록
-    ├── product_ingredients.csv      # 제품 ↔ 성분 매핑 (전성분)
-    └── conflict_rules.csv          # 충돌/시너지 규칙
+    ├── ingredient_groups.csv            # 성분 그룹 정의 (실사용)
+    ├── ingredient_group_members.csv     # 성분 ↔ 그룹 매핑 (실사용)
+    ├── ingredient_aliases.csv           # 성분 별칭 (실사용)
+    ├── conflict_rules.csv               # 충돌/시너지 규칙 (실사용)
+    ├── _ingredients.csv                 # 구버전 백업 (미사용)
+    ├── _products.csv                    # 구버전 백업 (미사용)
+    ├── _product_ingredients.csv         # 구버전 백업 (미사용)
+    └── ingredient_group_members_v0.csv  # INCI 표기 교체 전 구버전 (미사용)
 ```
+
+---
+
+## 파일별 실사용 현황 (scripts/seed.ts 기준)
+
+`pnpm seed`(scripts/seed.ts)가 실제로 읽어 Supabase에 삽입하는 파일은 아래 7개다.
+제품·성분·전성분은 **toyfiles/**, 그룹·별칭·충돌 규칙은 **csv/** 에서 가져온다.
+
+| 파일                                   | 행 수 | 상태           | 대상 테이블                                |
+| -------------------------------------- | ----- | -------------- | ------------------------------------------ |
+| `toyfiles/toy_ingredients.csv`         | 131   | ✅ 실사용      | ingredients                                |
+| `csv/ingredient_groups.csv`            | 26    | ✅ 실사용      | ingredient_groups                          |
+| `csv/ingredient_group_members.csv`     | 161   | ✅ 실사용      | ingredient_group_members                   |
+| `csv/ingredient_aliases.csv`           | 51    | ✅ 실사용      | ingredient_aliases (성분 미등록 행은 스킵) |
+| `toyfiles/toy_products.csv`            | 6     | ✅ 실사용      | products                                   |
+| `toyfiles/toy_product_ingredients.csv` | 222   | ✅ 실사용      | product_ingredients                        |
+| `csv/conflict_rules.csv`               | 52    | ✅ 실사용      | conflict_rules                             |
+| `csv/_ingredients.csv`                 | 38    | ❌ 구버전 백업 | —                                          |
+| `csv/_products.csv`                    | 14    | ❌ 구버전 백업 | —                                          |
+| `csv/_product_ingredients.csv`         | 26    | ❌ 구버전 백업 | —                                          |
+| `csv/ingredient_group_members_v0.csv`  | 24    | ❌ 구버전 백업 | —                                          |
+
+> **`_` 접두사 파일과 `ingredient_group_members_v0.csv`를 읽는 코드는 리포에 존재하지 않는다.**
+> `scripts/seed.ts`·`scripts/ingest-products.ts` 어디에서도 참조하지 않으며, 레포 전체 검색으로 확인했다.
+> 따라서 이 파일들을 수정해도 `pnpm seed` 결과에 반영되지 않는다. 성분 마스터를 바꾸려면
+> `toyfiles/toy_ingredients.csv`를 수정해야 한다 (seed.ts:151이 읽는 파일).
+>
+> `_` 접두사 파일은 초기 설계 CSV의 백업이다 (커밋 `ad97c3e`: "구버전 CSV → \_접두사 백업으로 이전").
+> `ingredient_group_members_v0.csv`는 한방식 표기를 INCI 음차 표기로 전면 교체하기 전 보존본이다.
+> 실제 DB 적재 현황과의 상세 대조는 `docs/DATA_STATUS.md` 참고.
 
 ---
 
 ## 시드 실행 순서 (FK 의존성)
 
 ```
-1. ingredients.csv
-2. ingredient_groups.csv
-3. ingredient_group_members.csv  ← ingredients + ingredient_groups 필요
-4. ingredient_aliases.csv        ← ingredients 필요
-5. products.csv
-6. product_ingredients.csv       ← products + ingredients 필요
-7. conflict_rules.csv            ← 독립적 (ingredients.name / group_name 참조)
+1. toyfiles/toy_ingredients.csv
+2. csv/ingredient_groups.csv
+3. csv/ingredient_group_members.csv       ← ingredients + ingredient_groups 필요
+4. csv/ingredient_aliases.csv             ← ingredients 필요
+5. toyfiles/toy_products.csv
+6. toyfiles/toy_product_ingredients.csv   ← products + ingredients 필요
+7. csv/conflict_rules.csv                 ← 독립적 (ingredients.name / group_name 참조)
 ```
 
 > CSV의 참조 필드는 **자연 키(이름)**를 사용합니다.  
@@ -51,6 +86,7 @@ data/
 
 > 현재 약 38개 핵심 성분 기입됨.  
 > **KCIA 전체 성분 DB (~21,805개)는 별도 확보 필요.**
+> 현재 `ingredients` 테이블 실적: **162종** (2026-08-25 기준)
 
 ---
 
@@ -62,6 +98,7 @@ data/
 | description |      | 그룹 설명                                |
 
 > 현재 8개 그룹 기입됨. The Ordinary 충돌 차트의 모든 그룹을 커버해야 합니다.
+> 현재 `ingredient_groups` 테이블 실적: **26종** (2026-08-25 기준)
 
 ---
 
@@ -107,7 +144,8 @@ data/
 | source_url           |      | 올리브영 상품 페이지 URL                           |
 | raw_ingredients_text |      | 올리브영에서 긁어온 원본 전성분 텍스트             |
 
-> 목표: **4개 카테고리 × 30개 = 120개 제품**  
+> 목표: **4개 카테고리 × 30개 = 120개 제품**
+> 현재 `products` 테이블 실적: **362건** (2026-08-25 기준)  
 > 현재 14개 예시 기입됨. 나머지는 올리브영에서 직접 수집 필요.
 
 ---
@@ -147,7 +185,8 @@ data/
 >
 > **Canonical 순서 규칙:** `ingredient_a < ingredient_b` (오름차순)으로 입력.  
 > 시드 스크립트가 자동 정렬하지만, 데이터 가독성을 위해 CSV에서도 맞춰두기를 권장합니다.  
-> 현재 13개 규칙 기입됨 (충돌 9개 + 시너지 4개).  
+> 현재 13개 규칙 기입됨 (충돌 9개 + 시너지 4개).
+> 현재 `conflict_rules` 테이블 실적: **52건** (충돌 23 + 시너지 29, 2026-08-25 기준)  
 > **The Ordinary 공식 충돌 차트의 나머지 규칙 추가 필요.**
 
 ---

@@ -17,7 +17,7 @@ export interface MatchedItem {
   raw_name: string;
   ingredient_id: string;
   ingredient_name: string;
-  match_type: "exact" | "alias" | "fuzzy";
+  match_type: "exact" | "exact_nospace" | "alias" | "fuzzy";
 }
 
 // 성분 매칭 API 요청 타입

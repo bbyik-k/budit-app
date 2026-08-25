@@ -226,6 +226,7 @@ export type Database = {
           oliveyoung_rank: number | null;
           raw_ingredients_text: string | null;
           source_url: string | null;
+          subcategory: string | null;
           updated_at: string;
         };
         Insert: {
@@ -239,6 +240,7 @@ export type Database = {
           oliveyoung_rank?: number | null;
           raw_ingredients_text?: string | null;
           source_url?: string | null;
+          subcategory?: string | null;
           updated_at?: string;
         };
         Update: {
@@ -252,6 +254,7 @@ export type Database = {
           oliveyoung_rank?: number | null;
           raw_ingredients_text?: string | null;
           source_url?: string | null;
+          subcategory?: string | null;
           updated_at?: string;
         };
         Relationships: [];

@@ -10,16 +10,18 @@ export default function StepIndicator({ step }: StepIndicatorProps) {
   const steps: { key: AnalyzeStep[]; label: string }[] = [
     { key: ["select-a"], label: "제품 A 선택" },
     { key: ["select-b"], label: "제품 B 선택" },
-    { key: ["ready", "analyzing"], label: "분석 준비" },
+    { key: ["ready", "analyzing", "error"], label: "분석 준비" },
     { key: ["result"], label: "결과 확인" },
   ];
 
   /** 현재 step이 해당 단계를 지났는지 판단하는 순서 인덱스 */
+  // "error"는 "result" 앞에 둔다. 뒤에 두면 실패했는데 "결과 확인"에 ✓가 찍힌다.
   const stepOrder: AnalyzeStep[] = [
     "select-a",
     "select-b",
     "ready",
     "analyzing",
+    "error",
     "result",
   ];
   const currentIndex = stepOrder.indexOf(step);

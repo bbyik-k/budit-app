@@ -10,7 +10,11 @@
     "format:check": "prettier --check .",
     "type-check": "tsc --noEmit",
     "check-all": "pnpm type-check && pnpm lint && pnpm format:check",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "seed": "tsx scripts/seed.ts",
+    "backup": "tsx scripts/backup-fixtures.ts",
+    "ingest": "tsx scripts/ingest-products.ts",
     "prepare": "husky"
   },
   "lint-staged": {
@@ -65,7 +69,8 @@
     "tailwindcss": "^3.4.1",
     "tailwindcss-animate": "^1.0.7",
     "tsx": "^4.21.0",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.10"
   },
   "packageManager": "pnpm@10.12.1+sha512.f0dda8580f0ee9481c5c79a1d927b9164f2c478e90992ad268bbb2465a736984391d6333d2c327913578b2804af33474ca554ba29c04a8b13060a717675ae3ac"
 }
