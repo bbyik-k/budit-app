@@ -52,3 +52,11 @@ shrimp_data/memory/
 .claude/agent-memory/
 # DB 백업 스냅샷 (전수 덤프 — 로컬 복구용)
 /data/fixtures/
+
+# VS Code 개인 워크스페이스 설정
+.vscode/
+
+# 조사·실행 보고서 (과정 산출물 — 로컬 보관, 레포 제외)
+/docs/test-reports/
+/docs/RESUME_FACTCHECK.md
+/budit_study_todo.md
