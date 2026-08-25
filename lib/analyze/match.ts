@@ -8,11 +8,12 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 type MatchSupabaseClient = SupabaseClient<Database>;
 
 /**
- * 4단계 성분 매칭 엔진
- * 1단계: ingredients.name 정확 일치
- * 2단계: ingredient_aliases.alias 정확 일치
- * 3단계: match_ingredient_fuzzy RPC (유사도 0.9 이상)
- * 4단계: 매칭 실패 → unmatched_log에 기록 (service_role 클라이언트 사용)
+ * 5단계 성분 매칭 엔진
+ * 1단계  : ingredients.name 정확 일치
+ * 1.5단계: 공백 제거 후 정확 일치 (표준명 + 별칭 양쪽 후보)
+ * 2단계  : ingredient_aliases.alias 정확 일치
+ * 3단계  : match_ingredient_fuzzy RPC (유사도 0.9 이상)
+ * 4단계  : 매칭 실패 → unmatched_log에 기록 (service_role 클라이언트 사용)
  *
  * @param options.logUnmatched 미매칭 로그 기록 여부. 기본값 true.
  *   미리보기(읽기 전용) 호출에서는 false로 넘겨 이중 로깅을 막는다.
@@ -75,13 +76,81 @@ export async function matchIngredients(
 
   const afterStep1 = normalizedNames.filter((n) => !step1Matched.has(n));
 
-  // ── Step 2: ingredient_aliases.alias 정확 일치 ──────────────────────
-  let afterStep2 = afterStep1;
+  // ── Step 1.5: 공백 제거 후 정확 일치 ────────────────────────────────
+  // "1,2-헥산 다이올"처럼 띄어쓰기만 어긋난 표기를 잡는다. normalizeName은
+  // 연속 공백을 하나로 줄일 뿐 제거하지는 않으므로 여기서 양쪽의 공백을
+  // 전부 없앤 뒤 비교한다. 유사도를 쓰지 않으므로 fuzzy 임계값과 무관하다.
+  let afterStep1p5 = afterStep1;
   if (afterStep1.length > 0) {
+    // 후보군은 표준명과 별칭 양쪽. 공백 제거 키 → 원본 행으로 되돌린다
+    const [{ data: allIngredients }, { data: allAliases }] = await Promise.all([
+      supabase.from("ingredients").select("id, name"),
+      supabase
+        .from("ingredient_aliases")
+        .select("alias, ingredient_id, ingredients(name)"),
+    ]);
+
+    const strip = (s: string) => s.replace(/\s+/g, "");
+    const hasSpace = (s: string) => /\s/.test(s);
+    const candidates = new Map<
+      string,
+      {
+        ingredient_id: string;
+        ingredient_name: string;
+        sourceHasSpace: boolean;
+      }
+    >();
+
+    for (const row of allIngredients ?? []) {
+      candidates.set(strip(row.name), {
+        ingredient_id: row.id,
+        ingredient_name: row.name,
+        sourceHasSpace: hasSpace(row.name),
+      });
+    }
+    for (const row of allAliases ?? []) {
+      const key = strip(row.alias);
+      if (candidates.has(key)) continue; // 표준명 우선
+      // Supabase 관계 조인은 배열 또는 단일 객체로 추론될 수 있음
+      const ingRaw = row.ingredients as
+        | { name: string }
+        | { name: string }[]
+        | null;
+      const ingName = Array.isArray(ingRaw)
+        ? (ingRaw[0]?.name ?? "")
+        : (ingRaw?.name ?? "");
+      candidates.set(key, {
+        ingredient_id: row.ingredient_id,
+        ingredient_name: ingName,
+        sourceHasSpace: hasSpace(row.alias),
+      });
+    }
+
+    const step1p5Matched = new Set<string>();
+    for (const term of afterStep1) {
+      const hit = candidates.get(strip(term));
+      if (!hit) continue;
+      // 양쪽 다 공백이 없다면 공백 문제가 아니다. 이 경우를 여기서 잡으면
+      // 공백 없는 별칭까지 가로채 Step 2(alias)가 무력화된다.
+      if (!hasSpace(term) && !hit.sourceHasSpace) continue;
+      matched.push({
+        raw_name: normalizedMap.get(term) ?? term,
+        ingredient_id: hit.ingredient_id,
+        ingredient_name: hit.ingredient_name,
+        match_type: "exact_nospace",
+      });
+      step1p5Matched.add(term);
+    }
+    afterStep1p5 = afterStep1.filter((n) => !step1p5Matched.has(n));
+  }
+
+  // ── Step 2: ingredient_aliases.alias 정확 일치 ──────────────────────
+  let afterStep2 = afterStep1p5;
+  if (afterStep1p5.length > 0) {
     const { data: aliasMatches } = await supabase
       .from("ingredient_aliases")
       .select("alias, ingredient_id, ingredients(name)")
-      .in("alias", afterStep1);
+      .in("alias", afterStep1p5);
 
     const step2Matched = new Set<string>();
     for (const row of aliasMatches ?? []) {
@@ -101,10 +170,14 @@ export async function matchIngredients(
       });
       step2Matched.add(row.alias);
     }
-    afterStep2 = afterStep1.filter((n) => !step2Matched.has(n));
+    afterStep2 = afterStep1p5.filter((n) => !step2Matched.has(n));
   }
 
   // ── Step 3: 퍼지 매칭 RPC (유사도 0.9 이상) ─────────────────────────
+  // threshold 0.9는 낮추지 않는다. 0.7~0.9 구간을 실측하면 말단 숫자만 다른
+  // 펩타이드 오탐(에스에이치-폴리펩타이드-11 → -1 등) 18종이 띄어쓰기 오류
+  // 정탐 5종보다 많다. 띄어쓰기 오류는 위 Step 1.5가 유사도 없이 처리하므로
+  // 임계값을 낮출 이유가 없다.
   let afterStep3 = afterStep2;
   if (afterStep2.length > 0) {
     const step3Matched = new Set<string>();

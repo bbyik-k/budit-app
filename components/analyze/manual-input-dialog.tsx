@@ -1,7 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle2, Link2, Loader2, Sparkles, XCircle } from "lucide-react";
+import {
+  Braces,
+  CheckCircle2,
+  Link2,
+  Loader2,
+  Sparkles,
+  XCircle,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -101,10 +108,11 @@ export default function ManualInputDialog({
     handleOpenChange(false);
   };
 
-  // 응답 기준 4분류
+  // 응답 기준 5분류
   const byType = (t: MatchedItem["match_type"]) =>
     matchResult?.matched.filter((m) => m.match_type === t) ?? [];
   const exactItems = byType("exact");
+  const nospaceItems = byType("exact_nospace");
   const aliasItems = byType("alias");
   const fuzzyItems = byType("fuzzy");
   const unmatchedItems = matchResult?.unmatched ?? [];
@@ -169,6 +177,26 @@ export default function ManualInputDialog({
                         className="rounded-full bg-safe/10 px-2 py-0.5 text-xs text-safe"
                       >
                         {m.ingredient_name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* 공백 무시 일치 */}
+              {nospaceItems.length > 0 && (
+                <div className="flex flex-col gap-1">
+                  <div className="flex items-center gap-1.5 font-medium text-safe">
+                    <Braces size={14} />
+                    공백 무시 일치 ({nospaceItems.length})
+                  </div>
+                  <div className="flex flex-wrap gap-1 pl-5">
+                    {nospaceItems.map((m, i) => (
+                      <span
+                        key={`nospace-${i}`}
+                        className="rounded-full bg-safe/10 px-2 py-0.5 text-xs text-safe"
+                      >
+                        {m.raw_name} → {m.ingredient_name}
                       </span>
                     ))}
                   </div>

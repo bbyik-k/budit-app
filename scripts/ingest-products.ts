@@ -160,6 +160,7 @@ interface Stats {
   totalTokens: number;
   uniqueTokens: Set<string>;
   exact: number;
+  exactNospace: number;
   alias: number;
   fuzzy: number;
   unmatched: number;
@@ -231,6 +232,7 @@ async function main() {
     totalTokens: 0,
     uniqueTokens: new Set(),
     exact: 0,
+    exactNospace: 0,
     alias: 0,
     fuzzy: 0,
     unmatched: 0,
@@ -301,9 +303,10 @@ async function main() {
       adminClient: supabase,
     });
 
-    const byType = { exact: 0, alias: 0, fuzzy: 0 };
+    const byType = { exact: 0, exact_nospace: 0, alias: 0, fuzzy: 0 };
     for (const m of result.matched) byType[m.match_type] += 1;
     stats.exact += byType.exact;
+    stats.exactNospace += byType.exact_nospace;
     stats.alias += byType.alias;
     stats.fuzzy += byType.fuzzy;
     stats.unmatched += result.unmatched.length;
@@ -353,15 +356,17 @@ async function main() {
 
     console.log(
       `${label} | 토큰 ${String(tokens.length).padStart(3)} | ` +
-        `exact ${String(byType.exact).padStart(3)} alias ${String(byType.alias).padStart(2)} ` +
-        `fuzzy ${String(byType.fuzzy).padStart(2)} unmatched ${String(result.unmatched.length).padStart(3)} | ` +
+        `exact ${String(byType.exact).padStart(3)} nosp ${String(byType.exact_nospace).padStart(2)} ` +
+        `alias ${String(byType.alias).padStart(2)} fuzzy ${String(byType.fuzzy).padStart(2)} ` +
+        `unmatched ${String(result.unmatched.length).padStart(3)} | ` +
         `PI ${records.length}행`
     );
   }
 
   // ── 요약 ───────────────────────────────────────────────────────────
   const elapsedSec = ((Date.now() - startedAt) / 1000).toFixed(1);
-  const totalMatched = stats.exact + stats.alias + stats.fuzzy;
+  const totalMatched =
+    stats.exact + stats.exactNospace + stats.alias + stats.fuzzy;
   const denom = totalMatched + stats.unmatched;
   const pct = (n: number) =>
     denom === 0 ? "0.0" : ((n / denom) * 100).toFixed(1);
@@ -376,6 +381,9 @@ async function main() {
     `총 성분 토큰        ${stats.totalTokens} (고유 ${stats.uniqueTokens.size})`
   );
   console.log(`  exact             ${stats.exact} (${pct(stats.exact)}%)`);
+  console.log(
+    `  exact_nospace     ${stats.exactNospace} (${pct(stats.exactNospace)}%)`
+  );
   console.log(`  alias             ${stats.alias} (${pct(stats.alias)}%)`);
   console.log(`  fuzzy             ${stats.fuzzy} (${pct(stats.fuzzy)}%)`);
   console.log(
