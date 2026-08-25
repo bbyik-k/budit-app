@@ -42,8 +42,8 @@ yarn-error.log*
 next-env.d.ts
 .playwright-mcp/
 
-# shrimp task manager
-shrimp_data/memory/
+# shrimp task manager (MCP 도구의 로컬 작업 상태 — 프로젝트 산출물 아님)
+shrimp_data/
 
 # prompt
 /docs/USER_PROMPTS.md
