@@ -393,25 +393,20 @@ async function seedProductIngredients(
     const BATCH_SIZE = 100;
     for (let i = 0; i < records.length; i += BATCH_SIZE) {
       const batch = records.slice(i, i + BATCH_SIZE);
+      // UNIQUE(product_id, ingredient_id) 기준 upsert.
+      // plain insert 면 재실행 시 23505 로 배치가 통째로 롤백되어 갱신되지 않는다
       const { error } = await supabase
         .from("product_ingredients")
-        .insert(batch);
+        .upsert(batch, { onConflict: "product_id,ingredient_id" });
 
       if (error) {
-        // 이미 삽입된 데이터라면 무시
-        if (error.code === "23505") {
-          console.warn(
-            `  ⚠️  중복 데이터 스킵 (batch ${Math.floor(i / BATCH_SIZE) + 1})`
-          );
-        } else {
-          console.error("  ❌ 오류:", error.message);
-          throw error;
-        }
+        console.error("  ❌ 오류:", error.message);
+        throw error;
       }
     }
   }
 
-  console.log(`  ✅ ${records.length}개 삽입 완료 (스킵: ${skipped}개)`);
+  console.log(`  ✅ ${records.length}개 upsert 완료 (스킵: ${skipped}개)`);
 }
 
 // ─────────────────────────────────────────────
@@ -490,19 +485,17 @@ async function seedConflictRules(ingredientMap: Map<string, string>) {
     };
   });
 
-  const { error } = await supabase.from("conflict_rules").insert(records);
+  // UNIQUE(ingredient_a, ingredient_b) 기준 upsert.
+  // plain insert 면 재실행 시 23505 로 스킵되어 CSV 정정분이 반영되지 않는다
+  const { error } = await supabase
+    .from("conflict_rules")
+    .upsert(records, { onConflict: "ingredient_a,ingredient_b" });
 
   if (error) {
-    // 중복 삽입 시 무시
-    if (error.code === "23505") {
-      console.warn("  ⚠️  일부 중복 데이터 스킵");
-    } else {
-      console.error("  ❌ 오류:", error.message);
-      throw error;
-    }
-  } else {
-    console.log(`  ✅ ${records.length}개 삽입 완료`);
+    console.error("  ❌ 오류:", error.message);
+    throw error;
   }
+  console.log(`  ✅ ${records.length}개 upsert 완료`);
 }
 
 // ─────────────────────────────────────────────
