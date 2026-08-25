@@ -316,6 +316,16 @@ export type Database = {
           source: string;
         }[];
       };
+      get_featured_products: {
+        Args: never;
+        Returns: {
+          id: string;
+          name: string;
+          brand: string;
+          category: string;
+          image_url: string;
+        }[];
+      };
       log_unmatched: {
         Args: { p_product_id: string; p_raw_name: string };
         Returns: undefined;
