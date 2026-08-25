@@ -10,7 +10,7 @@
 data/
 ├── toyfiles/                            # MVP용 토이 데이터 (제품·성분·전성분 — 실사용)
 │   ├── toy_products.csv                 # 제품 마스터 (올리브영 실제 제품 6종)
-│   ├── toy_ingredients.csv              # 성분 마스터 (KCIA 표준명 128종)
+│   ├── toy_ingredients.csv              # 성분 마스터 (KCIA 표준명 131종)
 │   └── toy_product_ingredients.csv      # 제품 ↔ 성분 매핑 (전성분 222행)
 └── csv/
     ├── ingredient_groups.csv            # 성분 그룹 정의 (실사용)
@@ -32,10 +32,10 @@ data/
 
 | 파일                                   | 행 수 | 상태           | 대상 테이블                                |
 | -------------------------------------- | ----- | -------------- | ------------------------------------------ |
-| `toyfiles/toy_ingredients.csv`         | 128   | ✅ 실사용      | ingredients                                |
+| `toyfiles/toy_ingredients.csv`         | 131   | ✅ 실사용      | ingredients                                |
 | `csv/ingredient_groups.csv`            | 26    | ✅ 실사용      | ingredient_groups                          |
-| `csv/ingredient_group_members.csv`     | 158   | ✅ 실사용      | ingredient_group_members                   |
-| `csv/ingredient_aliases.csv`           | 50    | ✅ 실사용      | ingredient_aliases (성분 미등록 행은 스킵) |
+| `csv/ingredient_group_members.csv`     | 161   | ✅ 실사용      | ingredient_group_members                   |
+| `csv/ingredient_aliases.csv`           | 51    | ✅ 실사용      | ingredient_aliases (성분 미등록 행은 스킵) |
 | `toyfiles/toy_products.csv`            | 6     | ✅ 실사용      | products                                   |
 | `toyfiles/toy_product_ingredients.csv` | 222   | ✅ 실사용      | product_ingredients                        |
 | `csv/conflict_rules.csv`               | 52    | ✅ 실사용      | conflict_rules                             |
@@ -44,6 +44,11 @@ data/
 | `csv/_product_ingredients.csv`         | 26    | ❌ 구버전 백업 | —                                          |
 | `csv/ingredient_group_members_v0.csv`  | 24    | ❌ 구버전 백업 | —                                          |
 
+> **`_` 접두사 파일과 `ingredient_group_members_v0.csv`를 읽는 코드는 리포에 존재하지 않는다.**
+> `scripts/seed.ts`·`scripts/ingest-products.ts` 어디에서도 참조하지 않으며, 레포 전체 검색으로 확인했다.
+> 따라서 이 파일들을 수정해도 `pnpm seed` 결과에 반영되지 않는다. 성분 마스터를 바꾸려면
+> `toyfiles/toy_ingredients.csv`를 수정해야 한다 (seed.ts:151이 읽는 파일).
+>
 > `_` 접두사 파일은 초기 설계 CSV의 백업이다 (커밋 `ad97c3e`: "구버전 CSV → \_접두사 백업으로 이전").
 > `ingredient_group_members_v0.csv`는 한방식 표기를 INCI 음차 표기로 전면 교체하기 전 보존본이다.
 > 실제 DB 적재 현황과의 상세 대조는 `docs/DATA_STATUS.md` 참고.
