@@ -80,3 +80,15 @@ export const fuzzyMatchRowSchema = z.object({
 });
 
 export const fuzzyMatchRowsSchema = z.array(fuzzyMatchRowSchema);
+
+// get_featured_products RPC 반환 행 스키마
+// analyze_conflicts 와 마찬가지로 .strict() 를 쓰지 않는다.
+export const featuredProductRowSchema = z.object({
+  id: z.uuid(),
+  name: z.string(),
+  brand: z.string(),
+  category: z.string().nullable(),
+  image_url: z.string().nullable(),
+});
+
+export const featuredProductRowsSchema = z.array(featuredProductRowSchema);

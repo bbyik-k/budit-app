@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Check, ChevronsUpDown, Loader2, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -38,6 +38,12 @@ export default function ProductSearch({
   const [items, setItems] = useState<ProductSearchItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  // 검색어 입력 전 기본 노출용 인기 제품 (서브카테고리별 최상위 랭크 18건)
+  const [featured, setFeatured] = useState<ProductSearchItem[]>([]);
+  const [featuredLoading, setFeaturedLoading] = useState(false);
+  // 팝오버를 여러 번 열어도 요청은 1회만 나가게 하는 플래그
+  const featuredRequested = useRef(false);
 
   // 250ms 디바운스 + AbortController로 이전 요청 취소 (응답 역전 방지)
   useEffect(() => {
@@ -104,16 +110,62 @@ export default function ProductSearch({
     setOpen(false);
   };
 
-  // 팝오버 닫힘 시 검색 상태 초기화
-  const handleOpenChange = (next: boolean) => {
-    setOpen(next);
-    if (!next) {
-      setQuery("");
-      setItems([]);
-      setLoading(false);
-      setErrorMsg(null);
+  // 인기 제품 목록 로드
+  // 마운트가 아니라 팝오버 첫 오픈 시 부른다. 마운트 시점에 부르면 슬롯 A/B
+  // 두 인스턴스가 페이지 로드마다 요청을 보내게 된다.
+  const loadFeatured = async () => {
+    if (featuredRequested.current) return;
+    featuredRequested.current = true;
+    setFeaturedLoading(true);
+
+    try {
+      const res = await fetch("/api/products/featured");
+      if (!res.ok) throw new Error(`status ${res.status}`);
+      const body: ProductSearchResponse = await res.json();
+      setFeatured(body.items ?? []);
+    } catch {
+      // 기본 목록은 실패해도 에러 문구를 띄우지 않는다. 검색 기능 자체는
+      // 그대로 동작해 사용자가 취할 조치가 없기 때문이다.
+      // 다음 오픈 때 재시도할 수 있도록 플래그만 되돌린다.
+      featuredRequested.current = false;
+      setFeatured([]);
+    } finally {
+      setFeaturedLoading(false);
     }
   };
+
+  const handleOpenChange = (next: boolean) => {
+    setOpen(next);
+
+    if (next) {
+      void loadFeatured();
+      return;
+    }
+
+    // 팝오버 닫힘 시 검색 상태만 초기화한다. featured는 캐시로 유지한다.
+    setQuery("");
+    setItems([]);
+    setLoading(false);
+    setErrorMsg(null);
+  };
+
+  const isSearching = query.trim().length > 0;
+
+  // 인기 제품과 검색 결과가 동일한 마크업을 쓰므로 렌더를 공유한다
+  const renderItem = (product: ProductSearchItem) => (
+    <CommandItem
+      key={product.id}
+      value={product.id}
+      onSelect={() => handleSelect(product)}
+      className="flex items-center gap-2"
+    >
+      <Check size={14} className="opacity-0" />
+      <div className="flex flex-col">
+        <span className="text-sm font-medium">{product.name}</span>
+        <span className="text-xs text-muted-foreground">{product.brand}</span>
+      </div>
+    </CommandItem>
+  );
 
   return (
     <div className="flex flex-col gap-3">
@@ -150,48 +202,41 @@ export default function ProductSearch({
                 onValueChange={setQuery}
               />
               <CommandList>
-                {loading && (
+                {/* 검색어 입력 전 — 인기 제품 기본 노출 */}
+                {!isSearching && featuredLoading && (
+                  <div className="flex items-center justify-center gap-2 py-6 text-sm text-muted-foreground">
+                    <Loader2 size={14} className="animate-spin" />
+                    불러오는 중...
+                  </div>
+                )}
+
+                {!isSearching && !featuredLoading && featured.length > 0 && (
+                  <CommandGroup heading="인기 제품">
+                    {featured.map(renderItem)}
+                  </CommandGroup>
+                )}
+
+                {/* 검색 중 */}
+                {isSearching && loading && (
                   <div className="flex items-center justify-center gap-2 py-6 text-sm text-muted-foreground">
                     <Loader2 size={14} className="animate-spin" />
                     검색 중...
                   </div>
                 )}
 
-                {!loading && errorMsg && (
+                {isSearching && !loading && errorMsg && (
                   <div className="py-6 text-center text-sm text-destructive">
                     {errorMsg}
                   </div>
                 )}
 
                 {/* shouldFilter={false}에서는 CommandEmpty가 빈 쿼리에도 뜨므로 조건부 렌더 */}
-                {!loading &&
-                  !errorMsg &&
-                  query.trim() &&
-                  items.length === 0 && (
-                    <CommandEmpty>검색 결과가 없습니다.</CommandEmpty>
-                  )}
+                {isSearching && !loading && !errorMsg && items.length === 0 && (
+                  <CommandEmpty>검색 결과가 없습니다.</CommandEmpty>
+                )}
 
-                {items.length > 0 && (
-                  <CommandGroup>
-                    {items.map((product) => (
-                      <CommandItem
-                        key={product.id}
-                        value={product.id}
-                        onSelect={() => handleSelect(product)}
-                        className="flex items-center gap-2"
-                      >
-                        <Check size={14} className="opacity-0" />
-                        <div className="flex flex-col">
-                          <span className="text-sm font-medium">
-                            {product.name}
-                          </span>
-                          <span className="text-xs text-muted-foreground">
-                            {product.brand}
-                          </span>
-                        </div>
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
+                {isSearching && items.length > 0 && (
+                  <CommandGroup>{items.map(renderItem)}</CommandGroup>
                 )}
               </CommandList>
             </Command>
